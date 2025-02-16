@@ -1,3 +1,8 @@
-[gd_scene format=3 uid="uid://578yfpfkbim6"]
+[gd_scene load_steps=2 format=3 uid="uid://578yfpfkbim6"]
+
+[ext_resource type="PackedScene" uid="uid://dlcv1qrrvtfet" path="res://Scenes/desktop.tscn" id="1_dntc4"]
 
 [node name="Main" type="Node2D"]
+
+[node name="Desktop" parent="." instance=ExtResource("1_dntc4")]
+position = Vector2(107, 91)
