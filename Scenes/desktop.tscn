@@ -17,6 +17,7 @@ texture = ExtResource("1_orkn2")
 [node name="Area2D" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+visible = false
 position = Vector2(32, 32)
 shape = SubResource("RectangleShape2D_bvjy8")
 

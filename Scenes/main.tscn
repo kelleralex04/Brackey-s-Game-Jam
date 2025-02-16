@@ -1,8 +1,44 @@
-[gd_scene load_steps=2 format=3 uid="uid://578yfpfkbim6"]
+[gd_scene load_steps=4 format=3 uid="uid://578yfpfkbim6"]
 
+[ext_resource type="Script" path="res://Scenes/main.gd" id="1_7vj2b"]
 [ext_resource type="PackedScene" uid="uid://dlcv1qrrvtfet" path="res://Scenes/desktop.tscn" id="1_dntc4"]
+[ext_resource type="PackedScene" uid="uid://chc7rkv04g0iu" path="res://Scenes/email_input.tscn" id="3_im7m8"]
 
 [node name="Main" type="Node2D"]
+script = ExtResource("1_7vj2b")
 
 [node name="Desktop" parent="." instance=ExtResource("1_dntc4")]
 position = Vector2(107, 91)
+
+[node name="EmailInput" parent="." instance=ExtResource("3_im7m8")]
+visible = false
+offset_left = 204.0
+offset_top = 19.0
+offset_right = 495.0
+offset_bottom = 161.0
+
+[node name="ExampleEmail" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Panel" type="Panel" parent="ExampleEmail"]
+layout_mode = 0
+offset_left = 203.0
+offset_top = 174.0
+offset_right = 496.0
+offset_bottom = 318.0
+
+[node name="Label" type="Label" parent="ExampleEmail/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Type this"
+
+[connection signal="desktop_clicked" from="Desktop" to="." method="_on_desktop_desktop_clicked"]
+[connection signal="text_changed" from="EmailInput" to="." method="_on_email_input_text_changed"]

@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://chc7rkv04g0iu"]
+
+[ext_resource type="Script" path="res://Scenes/email_input.gd" id="1_vuoaq"]
+
+[node name="EmailInput" type="TextEdit"]
+offset_right = 266.0
+offset_bottom = 106.0
+placeholder_text = "Placeholder"
+script = ExtResource("1_vuoaq")
