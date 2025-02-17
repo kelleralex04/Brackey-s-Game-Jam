@@ -8,8 +8,17 @@
 [node name="Main" type="Node2D"]
 script = ExtResource("1_7vj2b")
 
-[node name="Desktop" parent="." instance=ExtResource("1_dntc4")]
-position = Vector2(107, 91)
+[node name="Taskbar" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(640, 32)
+anchors_preset = 10
+anchor_right = 1.0
+offset_right = 640.0
+offset_bottom = 32.0
+grow_horizontal = 2
+alignment = 1
+
+[node name="EmailTask" parent="Taskbar" instance=ExtResource("4_g8ask")]
+layout_mode = 2
 
 [node name="EmailInput" parent="." instance=ExtResource("3_im7m8")]
 visible = false
@@ -18,6 +27,7 @@ offset_top = 19.0
 offset_right = 495.0
 offset_bottom = 161.0
 placeholder_text = "Type here"
+wrap_mode = 1
 
 [node name="ExampleEmail" type="Control" parent="."]
 visible = false
@@ -41,18 +51,10 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "Type this"
+autowrap_mode = 2
 
-[node name="Taskbar" type="HBoxContainer" parent="."]
-custom_minimum_size = Vector2(640, 24)
-anchors_preset = 10
-anchor_right = 1.0
-offset_right = 640.0
-offset_bottom = 24.0
-grow_horizontal = 2
-alignment = 1
-
-[node name="EmailTask" parent="Taskbar" instance=ExtResource("4_g8ask")]
-layout_mode = 2
+[node name="Desktop" parent="." instance=ExtResource("1_dntc4")]
+position = Vector2(107, 91)
 
 [node name="NewEmail" type="Button" parent="."]
 offset_left = 23.0
@@ -61,6 +63,6 @@ offset_right = 117.0
 offset_bottom = 313.0
 text = "New Email"
 
-[connection signal="desktop_clicked" from="Desktop" to="." method="_on_desktop_clicked"]
 [connection signal="text_changed" from="EmailInput" to="." method="_on_email_input_text_changed"]
+[connection signal="desktop_clicked" from="Desktop" to="." method="_on_desktop_clicked"]
 [connection signal="pressed" from="NewEmail" to="." method="_on_new_email_pressed"]

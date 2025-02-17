@@ -8,6 +8,7 @@ anchors_preset = 0
 offset_left = -16.0
 offset_right = -16.0
 size_flags_horizontal = 6
+size_flags_vertical = 4
 
 [node name="TextureRect" type="TextureRect" parent="."]
 offset_right = 32.0
