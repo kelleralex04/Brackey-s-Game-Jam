@@ -9,6 +9,9 @@ extends Node2D
 @onready var timer: Timer = $Timer
 @onready var time_left: Label = $Panel/TimeLeft
 
+var minutes: int
+var seconds: int
+var milliseconds: int
 var email_opened := false
 var task_queue := []
 var new_email: String
@@ -80,7 +83,11 @@ func _ready() -> void:
 	task_queue.append([email_task, label.text])
 
 func _process(delta: float) -> void:
-	time_left.text = str(timer.time_left).left(4)
+	var remaining_time = timer.time_left
+	minutes = int(remaining_time) / 60
+	seconds = int(remaining_time) % 60
+	milliseconds = int((remaining_time - int(remaining_time)) * 100)
+	time_left.text = str(minutes) + ":" + str(seconds).pad_zeros(2) + ":" + str(milliseconds).pad_zeros(2)
 
 func _input(event: InputEvent) -> void:
 	if Input.is_action_just_pressed("ui_cancel"):
