@@ -1,7 +1,5 @@
 extends Node2D
 
-class_name desktop_class
-
 signal desktop_clicked
 
 func _on_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:

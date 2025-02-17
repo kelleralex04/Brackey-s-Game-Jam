@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://bx4jtaudukp2x"]
+
+[ext_resource type="Texture2D" uid="uid://c2plafrlqy0lg" path="res://Assets/Sprites/email_task_icon.png" id="2_0fi4y"]
+
+[node name="EmailTask" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -16.0
+offset_right = -16.0
+size_flags_horizontal = 6
+
+[node name="TextureRect" type="TextureRect" parent="."]
+offset_right = 32.0
+offset_bottom = 24.0
+texture = ExtResource("2_0fi4y")
+stretch_mode = 2

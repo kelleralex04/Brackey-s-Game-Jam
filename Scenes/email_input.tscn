@@ -5,5 +5,13 @@
 [node name="EmailInput" type="TextEdit"]
 offset_right = 266.0
 offset_bottom = 106.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 placeholder_text = "Placeholder"
 script = ExtResource("1_vuoaq")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 237.0
+offset_top = 143.0
+offset_right = 506.0
+offset_bottom = 241.0
