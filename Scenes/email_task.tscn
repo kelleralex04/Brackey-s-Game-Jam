@@ -11,6 +11,7 @@ size_flags_horizontal = 6
 size_flags_vertical = 4
 
 [node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 0
 offset_right = 32.0
 offset_bottom = 24.0
 texture = ExtResource("2_0fi4y")

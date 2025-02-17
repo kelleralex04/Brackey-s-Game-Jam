@@ -6,6 +6,8 @@ extends Node2D
 @onready var example_email: Control = $ExampleEmail
 @onready var taskbar: HBoxContainer = $Taskbar
 @onready var email_task: Control = $Taskbar/EmailTask
+@onready var timer: Timer = $Timer
+@onready var time_left: Label = $Panel/TimeLeft
 
 var email_opened := false
 var task_queue := []
@@ -77,6 +79,9 @@ func _ready() -> void:
 	label.text = choose_email()
 	task_queue.append([email_task, label.text])
 
+func _process(delta: float) -> void:
+	time_left.text = str(timer.time_left).left(4)
+
 func _input(event: InputEvent) -> void:
 	if Input.is_action_just_pressed("ui_cancel"):
 		get_tree().quit()
@@ -84,12 +89,9 @@ func _input(event: InputEvent) -> void:
 	if Input.is_action_just_pressed('ui_accept') and email_opened:
 		if email_input.text == label.text:
 			_on_desktop_clicked()
-
 			task_queue[0][0].queue_free()
 			task_queue.pop_front()
 			email_input.text = ''
-			if task_queue.size():
-				label.text = task_queue[0][1]
 		else:
 			print('Error!')
 			_on_desktop_clicked()
@@ -120,6 +122,8 @@ func _on_desktop_clicked() -> void:
 		email_opened = !email_opened
 		email_input.visible = !email_input.visible
 		example_email.visible = !example_email.visible
+		label.text = task_queue[0][1]
+		email_input.grab_focus()
 
 func _on_new_email_pressed() -> void:
 	var email_task_scene = preload('res://Scenes/email_task.tscn')
@@ -127,3 +131,9 @@ func _on_new_email_pressed() -> void:
 	task_queue.append([new_email_task, choose_email()])
 	
 	taskbar.add_child(new_email_task)
+
+func _on_start_timer_pressed() -> void:
+	timer.start()
+
+func _on_timer_timeout() -> void:
+	print('done')

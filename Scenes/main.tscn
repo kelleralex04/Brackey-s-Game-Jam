@@ -27,6 +27,8 @@ offset_top = 19.0
 offset_right = 495.0
 offset_bottom = 161.0
 placeholder_text = "Type here"
+context_menu_enabled = false
+middle_mouse_paste_enabled = false
 wrap_mode = 1
 
 [node name="ExampleEmail" type="Control" parent="."]
@@ -54,7 +56,7 @@ text = "Type this"
 autowrap_mode = 2
 
 [node name="Desktop" parent="." instance=ExtResource("1_dntc4")]
-position = Vector2(107, 91)
+position = Vector2(41, 116)
 
 [node name="NewEmail" type="Button" parent="."]
 offset_left = 23.0
@@ -63,6 +65,40 @@ offset_right = 117.0
 offset_bottom = 313.0
 text = "New Email"
 
+[node name="StartTimer" type="Button" parent="."]
+offset_left = 23.0
+offset_top = 318.0
+offset_right = 118.0
+offset_bottom = 349.0
+text = "Start Timer"
+
+[node name="Panel" type="Panel" parent="."]
+offset_left = 19.0
+offset_top = 70.0
+offset_right = 138.0
+offset_bottom = 100.0
+
+[node name="TimeLeft" type="Label" parent="Panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -16.0
+offset_top = -11.5
+offset_right = 16.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "0.00"
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 5.0
+one_shot = true
+
 [connection signal="text_changed" from="EmailInput" to="." method="_on_email_input_text_changed"]
 [connection signal="desktop_clicked" from="Desktop" to="." method="_on_desktop_clicked"]
 [connection signal="pressed" from="NewEmail" to="." method="_on_new_email_pressed"]
+[connection signal="pressed" from="StartTimer" to="." method="_on_start_timer_pressed"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
