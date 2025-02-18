@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://578yfpfkbim6"]
+[gd_scene load_steps=15 format=3 uid="uid://578yfpfkbim6"]
 
 [ext_resource type="Script" path="res://Scenes/main.gd" id="1_7vj2b"]
 [ext_resource type="PackedScene" uid="uid://dlcv1qrrvtfet" path="res://Scenes/desktop.tscn" id="1_dntc4"]
@@ -9,6 +9,15 @@
 [ext_resource type="Texture2D" uid="uid://lkv7pcombhf5" path="res://Assets/Sprites/desk.png" id="7_8wov8"]
 [ext_resource type="Texture2D" uid="uid://bpbc0q840g406" path="res://Assets/Sprites/john_office.png" id="7_lthcq"]
 [ext_resource type="Texture2D" uid="uid://dge34nelojwkh" path="res://Assets/Sprites/screen.png" id="8_3seal"]
+[ext_resource type="Texture2D" uid="uid://m0b13jw25sd2" path="res://Assets/Sprites/calendar_icon.png" id="8_om7dv"]
+[ext_resource type="Texture2D" uid="uid://dl8d25nlslgoc" path="res://Assets/Sprites/email_icon.png" id="9_8p3re"]
+[ext_resource type="FontFile" uid="uid://vxm7q8aomuc5" path="res://Assets/Fonts/NESCyrillic.ttf" id="11_gyv0t"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ddnfx"]
+size = Vector2(57, 55)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pdtc3"]
+size = Vector2(57, 30)
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_7vj2b")
@@ -18,118 +27,11 @@ offset_right = 640.0
 offset_bottom = 360.0
 texture = ExtResource("2_mnrvu")
 
-[node name="Taskbar" type="HBoxContainer" parent="."]
-custom_minimum_size = Vector2(640, 32)
-anchors_preset = 10
-anchor_right = 1.0
-offset_right = 640.0
-offset_bottom = 32.0
-grow_horizontal = 2
-alignment = 1
-
-[node name="EmailTask" parent="Taskbar" instance=ExtResource("4_g8ask")]
-layout_mode = 2
-
-[node name="PhonePanel" type="Panel" parent="."]
-visible = false
-offset_left = 209.0
-offset_top = 81.0
-offset_right = 503.0
-offset_bottom = 173.0
-
-[node name="PhoneVbox" type="VBoxContainer" parent="PhonePanel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="PhoneCallerLabel" type="Label" parent="PhonePanel/PhoneVbox"]
-custom_minimum_size = Vector2(16, 24)
-layout_mode = 2
-text = "Caller:"
-autowrap_mode = 2
-
-[node name="PhoneDateLabel" type="Label" parent="PhonePanel/PhoneVbox"]
-custom_minimum_size = Vector2(16, 24)
-layout_mode = 2
-text = "Meeting Date:"
-autowrap_mode = 2
-
-[node name="PhoneTimeLabel" type="Label" parent="PhonePanel/PhoneVbox"]
-custom_minimum_size = Vector2(16, 24)
-layout_mode = 2
-text = "Meeting Time:"
-autowrap_mode = 2
-
 [node name="Desktop" parent="." instance=ExtResource("1_dntc4")]
 position = Vector2(129, 158)
 
-[node name="NewEmail" type="Button" parent="."]
-offset_left = 287.0
-offset_top = 282.0
-offset_right = 381.0
-offset_bottom = 313.0
-text = "New Email"
-
-[node name="StartTimer" type="Button" parent="."]
-offset_left = 287.0
-offset_top = 318.0
-offset_right = 382.0
-offset_bottom = 349.0
-text = "Start Timer"
-
-[node name="TimerPanel" type="Panel" parent="."]
-offset_left = 5.0
-offset_top = 5.0
-offset_right = 124.0
-offset_bottom = 35.0
-
-[node name="TimeLeft" type="Label" parent="TimerPanel"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -16.0
-offset_top = -11.5
-offset_right = 16.0
-offset_bottom = 11.5
-grow_horizontal = 2
-grow_vertical = 2
-text = "00:00"
-
-[node name="Timer" type="Timer" parent="."]
-wait_time = 120.0
-one_shot = true
-
 [node name="Phone" parent="." instance=ExtResource("5_skwty")]
 position = Vector2(44, 210)
-
-[node name="GameOverPanel" type="Panel" parent="."]
-visible = false
-offset_right = 640.0
-offset_bottom = 360.0
-
-[node name="GameOverLabel" type="Label" parent="GameOverPanel"]
-layout_mode = 0
-offset_left = 109.0
-offset_top = 148.0
-offset_right = 550.0
-offset_bottom = 193.0
-theme_override_colors/font_color = Color(1, 0, 0, 1)
-theme_override_font_sizes/font_size = 32
-text = "NOTHING CAN GO WRONG!!!"
-
-[node name="Restart" type="Button" parent="GameOverPanel"]
-layout_mode = 0
-offset_left = 268.0
-offset_top = 209.0
-offset_right = 364.0
-offset_bottom = 240.0
-text = "Try Again?"
 
 [node name="JohnOffice" type="TextureRect" parent="."]
 offset_left = 73.0
@@ -145,15 +47,28 @@ offset_right = 263.0
 offset_bottom = 312.0
 texture = ExtResource("7_8wov8")
 
+[node name="Taskbar" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(640, 32)
+anchors_preset = 10
+anchor_right = 1.0
+offset_right = 640.0
+offset_bottom = 32.0
+grow_horizontal = 2
+alignment = 1
+
+[node name="EmailTask" parent="Taskbar" instance=ExtResource("4_g8ask")]
+layout_mode = 2
+
 [node name="Screen" type="TextureRect" parent="."]
 visible = false
-offset_left = 70.0
-offset_top = 30.0
-offset_right = 570.0
-offset_bottom = 330.0
+offset_left = 126.0
+offset_top = 24.0
+offset_right = 626.0
+offset_bottom = 324.0
 texture = ExtResource("8_3seal")
 
 [node name="EmailInput" parent="Screen" instance=ExtResource("3_im7m8")]
+visible = false
 layout_mode = 0
 offset_left = 133.0
 offset_top = 20.0
@@ -165,6 +80,7 @@ middle_mouse_paste_enabled = false
 wrap_mode = 1
 
 [node name="ExampleEmail" type="Control" parent="Screen"]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_left = -70.0
@@ -197,11 +113,161 @@ offset_right = 483.0
 offset_bottom = 48.0
 text = "x"
 
+[node name="CalendarIcon" type="Control" parent="Screen"]
+custom_minimum_size = Vector2(57, 55)
+anchors_preset = 0
+offset_left = 39.0
+offset_top = 93.0
+offset_right = 96.0
+offset_bottom = 148.0
+
+[node name="TextureRect" type="TextureRect" parent="Screen/CalendarIcon"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_om7dv")
+
+[node name="Area2D" type="Area2D" parent="Screen/CalendarIcon"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Screen/CalendarIcon/Area2D"]
+position = Vector2(28.5, 27.5)
+shape = SubResource("RectangleShape2D_ddnfx")
+
+[node name="EmailIcon" type="Control" parent="Screen"]
+anchors_preset = 0
+offset_left = 39.0
+offset_top = 31.0
+offset_right = 96.0
+offset_bottom = 61.0
+
+[node name="TextureRect" type="TextureRect" parent="Screen/EmailIcon"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("9_8p3re")
+stretch_mode = 2
+
+[node name="Area2D" type="Area2D" parent="Screen/EmailIcon"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Screen/EmailIcon/Area2D"]
+position = Vector2(28.5, 15)
+shape = SubResource("RectangleShape2D_pdtc3")
+
+[node name="PhonePanel" type="Panel" parent="."]
+visible = false
+offset_left = 5.0
+offset_top = 39.0
+offset_right = 124.0
+offset_bottom = 318.0
+
+[node name="PhoneVbox" type="VBoxContainer" parent="PhonePanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PhoneCallerLabel" type="Label" parent="PhonePanel/PhoneVbox"]
+custom_minimum_size = Vector2(16, 24)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("11_gyv0t")
+theme_override_font_sizes/font_size = 16
+autowrap_mode = 2
+
+[node name="PhoneCompanyLabel" type="Label" parent="PhonePanel/PhoneVbox"]
+custom_minimum_size = Vector2(16, 24)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("11_gyv0t")
+theme_override_font_sizes/font_size = 16
+autowrap_mode = 2
+
+[node name="PhoneReasonLabel" type="Label" parent="PhonePanel/PhoneVbox"]
+custom_minimum_size = Vector2(16, 24)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("11_gyv0t")
+autowrap_mode = 2
+
+[node name="ClosePhone" type="Button" parent="PhonePanel"]
+layout_mode = 0
+offset_left = 98.0
+offset_top = 246.0
+offset_right = 115.0
+offset_bottom = 277.0
+text = "x"
+
+[node name="NewEmail" type="Button" parent="."]
+offset_left = 1.0
+offset_top = 327.0
+offset_right = 95.0
+offset_bottom = 358.0
+text = "New Email"
+
+[node name="StartTimer" type="Button" parent="."]
+offset_left = 99.0
+offset_top = 326.0
+offset_right = 194.0
+offset_bottom = 357.0
+text = "Start Timer"
+
+[node name="TimerPanel" type="Panel" parent="."]
+offset_right = 119.0
+offset_bottom = 30.0
+
+[node name="TimeLeft" type="Label" parent="TimerPanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -16.0
+offset_top = -11.5
+offset_right = 16.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "00:00"
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 120.0
+one_shot = true
+
+[node name="GameOverPanel" type="Panel" parent="."]
+visible = false
+offset_right = 640.0
+offset_bottom = 360.0
+
+[node name="GameOverLabel" type="Label" parent="GameOverPanel"]
+layout_mode = 0
+offset_left = 109.0
+offset_top = 148.0
+offset_right = 550.0
+offset_bottom = 193.0
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+theme_override_font_sizes/font_size = 32
+text = "NOTHING CAN GO WRONG!!!"
+
+[node name="Restart" type="Button" parent="GameOverPanel"]
+layout_mode = 0
+offset_left = 268.0
+offset_top = 209.0
+offset_right = 364.0
+offset_bottom = 240.0
+text = "Try Again?"
+
 [connection signal="desktop_clicked" from="Desktop" to="." method="_on_desktop_clicked"]
+[connection signal="phone_clicked" from="Phone" to="." method="_on_phone_clicked"]
+[connection signal="text_changed" from="Screen/EmailInput" to="." method="_on_email_input_text_changed"]
+[connection signal="pressed" from="Screen/CloseScreen" to="." method="_on_close_screen_pressed"]
+[connection signal="pressed" from="PhonePanel/ClosePhone" to="." method="_on_close_phone_pressed"]
 [connection signal="pressed" from="NewEmail" to="." method="_on_new_email_pressed"]
 [connection signal="pressed" from="StartTimer" to="." method="_on_start_timer_pressed"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
-[connection signal="phone_clicked" from="Phone" to="." method="_on_phone_phone_clicked"]
 [connection signal="pressed" from="GameOverPanel/Restart" to="." method="_on_restart_pressed"]
-[connection signal="text_changed" from="Screen/EmailInput" to="." method="_on_email_input_text_changed"]
-[connection signal="pressed" from="Screen/CloseScreen" to="." method="_on_close_screen_pressed"]

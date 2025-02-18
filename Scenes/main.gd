@@ -1,5 +1,7 @@
 extends Node2D
 
+signal typing_finished
+
 @onready var desktop: Node2D = $Desktop
 @onready var example_email_label: Label = $Screen/ExampleEmail/ExampleEmailPanel/ExampleEmailLabel
 @onready var email_input: email_class = $Screen/EmailInput
@@ -11,18 +13,28 @@ extends Node2D
 @onready var game_over_panel: Panel = $GameOverPanel
 @onready var phone_panel: Panel = $PhonePanel
 @onready var phone_caller_label: Label = $PhonePanel/PhoneVbox/PhoneCallerLabel
-@onready var phone_date_label: Label = $PhonePanel/PhoneVbox/PhoneDateLabel
-@onready var phone_time_label: Label = $PhonePanel/PhoneVbox/PhoneTimeLabel
+@onready var phone_company_label: Label = $PhonePanel/PhoneVbox/PhoneCompanyLabel
+@onready var phone_reason_label: Label = $PhonePanel/PhoneVbox/PhoneReasonLabel
 @onready var screen: TextureRect = $Screen
 
 var minutes: int
 var seconds: int
 var milliseconds: int
-var open_panel := false
-var email_opened := false
+#var open_panel := false
+var desktop_opened := false
 var phone_opened := false
 var task_queue := []
 var new_email: String
+var cur_company: String
+var cur_caller: String
+var cur_reason: String
+var cur_label: Label
+var rand: int
+var full_text: String
+var typing_speed: float
+var typewriter_index := 0
+var typewriter_timer: Timer
+
 var email_responses: Dictionary = {
 	1: "I'd explain why this won't work, but I have a feeling you're not big on listening to reason.",
 	2: "It's cute that you think this is my problem.",
@@ -85,10 +97,71 @@ var email_responses: Dictionary = {
 	59: "This request is so unrealistic it should be classified as science fiction.",
 	60: "Oh, so we're just making up deadlines now? Cool, cool.",
 }
+var company_employee = [
+	["SynerTech Solutions", "Alice Carter", "Michael Bennett", "Sophia Ramirez"],
+	["Nexora Consulting", "Daniel Harris", "Emma Patel", "Jacob Thompson"],
+	["Synergex Innovations", "Oliver White", "Emily Parker", "Lucas Anderson"],
+	["Stratosphere Global", "Grace Mitchell", "Nathan Scott", "Liam Rodriguez"],
+	["Optimus Enterprises", "Mia Evans", "Ethan Foster", "Ava Cooper"],
+	["Vertex Strategies", "Benjamin Walker", "Olivia Morris", "James Brooks"],
+	["Bluewave Analytics", "Isabella Hall", "Alexander Reed", "Charlotte Adams"],
+	["Peak Performance Partners", "William Stewart", "Amelia Carter", "Henry Gray"],
+	["Quantum Edge Consulting", "Ella Jenkins", "Samuel Morgan", "Victoria Ross"],
+	["Summit Synergy", "Noah Campbell", "Sophie Kelly", "Lily Flores"],
+	["Evercore Dynamics", "Mason Barnes", "Harper Lewis", "Elijah Perry"],
+	["Catalyst Ventures", "Aiden Hughes", "Zoe Ramirez", "Sebastian Carter"],
+	["Apex Growth Solutions", "Lillian Bell", "David Sanders", "Evelyn Price"],
+	["Zenith Corporate Solutions", "Caleb Fisher", "Madison Howard", "Jack Ward"],
+	["Momentum Advisory Group", "Natalie Cook", "Dylan Richardson", "Leo Bryant"],
+	["Elevate Business Solutions", "Scarlett Griffin", "Owen Wood", "Hailey Peterson"],
+	["Paragon Strategic Partners", "Chloe Powell", "Julian Cox", "Penelope Hayes"],
+	["Horizon Capital Group", "Matthew Foster", "Aubrey Morgan", "Daniel Russell"],
+	["Fusion Enterprises", "Emily Simmons", "Wyatt Murphy", "Aria Collins"],
+	["OmniVision Consulting", "Luke Hughes", "Savannah Price", "Joseph Parker"],
+	["NovaSphere Solutions", "Victoria Bailey", "Benjamin Gonzalez", "Grace Long"],
+	["Epicenter Business Solutions", "Andrew Rivera", "Isla Carter", "Gabriel Scott"],
+	["Proxima Consulting Group", "Samantha Hayes", "Ryan Bennett", "Nathaniel Brooks"],
+	["Beacon Strategy Partners", "Lydia Cooper", "Adam Flores", "Nora Bell"],
+	["Titan Business Solutions", "Eleanor Howard", "Connor Fisher", "Hudson Griffin"],
+	["Synergy Nexus", "Daisy Collins", "Cole Ramirez", "Aurora Peterson"],
+	["Acumen Corporate Advisors", "Eva Morgan", "Carson Ward", "Ivy Stewart"],
+	["Visionary Edge Consulting", "Asher Parker", "Layla Wood", "Easton Perry"],
+	["Astute Advisory Group", "Zachary Price", "Bella Richardson", "Elliot Murphy"],
+	["Veritas Growth Partners", "Stella Russell", "Axel Lewis", "Hazel Bryant"],
+	["Summitwise Consulting", "Gianna Foster", "Miles Bell", "Ariana Hayes"],
+	["Metrix Global Solutions", "Julian Simmons", "Alice Cook", "Beau Kelly"],
+	["Excelsior Business Consulting", "Leonardo Hughes", "Melanie Powell", "Jameson Cox"],
+	["AlphaCore Strategies", "Sarah Morgan", "Ezra Stewart", "Leilani Mitchell"],
+	["Omnexus Solutions", "Madeline Adams", "Ryder Bailey", "Josephine Gonzalez"],
+	["PrismEdge Consulting", "Xavier Carter", "Emilia Rivera", "Piper Scott"],
+	["Centric Vision Partners", "Bennett Ramirez", "Delilah Brooks", "Adrian Cooper"],
+	["Infinitum Business Consulting", "Kinsley Richardson", "Maxwell Perry", "Sydney Murphy"],
+	["PrimePath Advisory", "Juliette Long", "Finn Ward", "Elise Flores"],
+	["Northstar Strategic Advisors", "Lorenzo Griffin", "Brielle Peterson", "Victor Bennett"],
+	["ElevateX Solutions", "Evangeline Parker", "Theo Morgan", "Callie Howard"],
+	["Legacy Growth Partners", "Maddox Price", "Sadie Powell", "Jasper Simmons"],
+	["Integra Advisory Group", "Bianca Lewis", "Camden Foster", "Annabelle Scott"],
+	["StellarEdge Consulting", "Finnley Cook", "Rebecca Carter", "Dante Bell"],
+	["Aspire Corporate Solutions", "Mikayla Collins", "Elliott Ward", "Rylee Bailey"],
+	["Momentum Edge Partners", "Diana Ramirez", "Anderson Brooks", "Margot Gonzalez"],
+	["NextGen Synergies", "Giselle Mitchell", "Jayden Wood", "Sienna Parker"],
+	["Prospera Business Solutions", "Grayson Carter", "Anastasia Perry", "Micah Rivera"],
+	["Pinnacle Vision Strategies", "Zane Stewart", "Tessa Cook", "Roman Bennett"],
+	["Infinity Growth Advisors", "Dakota Bell", "Alina Kelly", "Tristan Howard"],
+]
+var reasons = [
+	'Schedule Meeting',
+	'Make Order',
+	'Take Message'
+]
 
 func _ready() -> void:
 	example_email_label.text = choose_email()
 	task_queue.append([email_task, example_email_label.text])
+	rand = randi_range(0, 49)
+	cur_company = company_employee[rand][0]
+	cur_caller = company_employee[rand][randi_range(1, 3)]
+	cur_reason = reasons[randi_range(0, 2)]
 
 func _process(delta: float) -> void:
 	var remaining_time = timer.time_left
@@ -101,7 +174,7 @@ func _input(event: InputEvent) -> void:
 	if Input.is_action_just_pressed("ui_cancel"):
 		get_tree().quit()
 	
-	if Input.is_action_just_pressed('ui_accept') and email_opened:
+	if Input.is_action_just_pressed('ui_accept') and desktop_opened:
 		if email_input.text == example_email_label.text:
 			_on_desktop_clicked()
 			task_queue[0][0].queue_free()
@@ -135,21 +208,51 @@ func _on_email_input_text_changed() -> void:
 			email_input.add_theme_color_override('font_color', Color(1, 1, 1))
 
 func _on_desktop_clicked() -> void:
-	if task_queue.size():
-		if !open_panel or open_panel and email_opened:
-			open_panel = !open_panel
-			email_opened = !email_opened
-			#email_input.visible = !email_input.visible
-			#example_email.visible = !example_email.visible
-			screen.visible = !screen.visible
-			example_email_label.text = task_queue[0][1]
-			email_input.grab_focus()
+	#if task_queue.size():
+		#if !open_panel or open_panel and desktop_opened:
+			#open_panel = !open_panel
+	desktop_opened = !desktop_opened
+	screen.visible = !screen.visible
+	example_email_label.text = task_queue[0][1]
+	email_input.grab_focus()
 
-func _on_phone_phone_clicked() -> void:
-	if !open_panel or open_panel and phone_opened:
-		open_panel = !open_panel
-		phone_opened = !phone_opened
-		phone_panel.visible = !phone_panel.visible
+func _on_phone_clicked() -> void:
+	#if !open_panel or open_panel and phone_opened:
+		#open_panel = !open_panel
+	if phone_opened and get_child(-1) == typewriter_timer:
+		typewriter_timer.set_paused(true)
+	elif !phone_opened and get_child(-1) == typewriter_timer:
+		typewriter_timer.set_paused(false)
+	else:
+		phone_call()
+	phone_opened = !phone_opened
+	phone_panel.visible = !phone_panel.visible
+
+func phone_call():
+	call_typewriter(phone_caller_label, 'Caller: ' + cur_caller)
+	await typing_finished
+	call_typewriter(phone_company_label, 'Company: ' + cur_company)
+	await typing_finished
+	call_typewriter(phone_reason_label, 'Reason: ' + cur_reason)
+
+func call_typewriter(label: Label ,text: String):
+	typewriter_timer = Timer.new()
+	full_text = text
+	cur_label = label
+	typewriter_timer.wait_time = randf_range(0.05, 0.15)
+	typewriter_timer.autostart = true
+	typewriter_timer.one_shot = false
+	typewriter_timer.timeout.connect(_on_typewriter_timer_timeout)
+	add_child(typewriter_timer)
+
+func _on_typewriter_timer_timeout():
+	if typewriter_index < full_text.length():
+		cur_label.text += full_text[typewriter_index]
+		typewriter_index += 1
+	else:
+		typewriter_index = 0
+		get_child(-1).queue_free()
+		typing_finished.emit()
 
 func _on_new_email_pressed() -> void:
 	var email_task_scene = preload('res://Scenes/email_task.tscn')
@@ -172,3 +275,6 @@ func game_over():
 
 func _on_close_screen_pressed() -> void:
 	_on_desktop_clicked()
+
+func _on_close_phone_pressed() -> void:
+	_on_phone_clicked()
