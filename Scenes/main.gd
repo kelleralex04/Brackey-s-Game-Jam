@@ -31,7 +31,7 @@ var email_responses: Dictionary = {
 	5: "Fascinating request - I'll be sure to add it to my ever-growing list of miracles to perform.",
 	6: "I admire your confidence in sending this.",
 	7: "Let me take a deep breath before I begin.",
-	8: "It's always refreshing to see such… unique interpretations of reality.",
+	8: "It's always refreshing to see such... unique interpretations of reality.",
 	9: "I'll be sure to prioritize this right after all the other things that actually make sense.",
 	10: "It's truly impressive how confidently incorrect this is.",
 	11: "Oh great, another email that could have been a Google search.",
@@ -159,7 +159,7 @@ func _on_new_email_pressed() -> void:
 	taskbar.add_child(new_email_task)
 
 func _on_start_timer_pressed() -> void:
-	timer.start()
+	timer.start(timer.wait_time)
 
 func _on_timer_timeout() -> void:
 	game_over()

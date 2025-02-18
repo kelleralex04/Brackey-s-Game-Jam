@@ -81,10 +81,10 @@ offset_bottom = 349.0
 text = "Start Timer"
 
 [node name="TimerPanel" type="Panel" parent="."]
-offset_left = 34.0
-offset_top = 67.0
-offset_right = 153.0
-offset_bottom = 97.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 124.0
+offset_bottom = 35.0
 
 [node name="TimeLeft" type="Label" parent="TimerPanel"]
 layout_mode = 1
@@ -102,7 +102,7 @@ grow_vertical = 2
 text = "00:00"
 
 [node name="Timer" type="Timer" parent="."]
-wait_time = 5.0
+wait_time = 120.0
 one_shot = true
 
 [node name="Phone" parent="." instance=ExtResource("5_skwty")]
@@ -154,6 +154,7 @@ offset_bottom = 330.0
 texture = ExtResource("8_3seal")
 
 [node name="EmailInput" parent="Screen" instance=ExtResource("3_im7m8")]
+layout_mode = 0
 offset_left = 133.0
 offset_top = 20.0
 offset_right = 413.0
