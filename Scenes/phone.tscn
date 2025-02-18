@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=3 uid="uid://c5713bjf7ax0x"]
+
+[ext_resource type="Script" path="res://Scenes/phone.gd" id="1_iqyal"]
+[ext_resource type="Texture2D" uid="uid://cejn53exhymvt" path="res://Assets/Sprites/phone_back.png" id="2_2wcfy"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xv2ys"]
+size = Vector2(29, 24)
+
+[node name="Phone" type="Node2D"]
+script = ExtResource("1_iqyal")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+offset_left = -16.0
+offset_top = -12.0
+offset_right = 16.0
+offset_bottom = 12.0
+texture = ExtResource("2_2wcfy")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+visible = false
+position = Vector2(1.5, 0)
+shape = SubResource("RectangleShape2D_xv2ys")
+
+[connection signal="input_event" from="Area2D" to="." method="_on_area_2d_input_event"]

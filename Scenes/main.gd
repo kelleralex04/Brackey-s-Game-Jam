@@ -1,18 +1,26 @@
 extends Node2D
 
 @onready var desktop: Node2D = $Desktop
-@onready var label: Label = $ExampleEmail/Panel/Label
-@onready var email_input: email_class = $EmailInput
-@onready var example_email: Control = $ExampleEmail
+@onready var example_email_label: Label = $Screen/ExampleEmail/ExampleEmailPanel/ExampleEmailLabel
+@onready var email_input: email_class = $Screen/EmailInput
+@onready var example_email: Control = $Screen/ExampleEmail
 @onready var taskbar: HBoxContainer = $Taskbar
 @onready var email_task: Control = $Taskbar/EmailTask
 @onready var timer: Timer = $Timer
-@onready var time_left: Label = $Panel/TimeLeft
+@onready var time_left: Label = $TimerPanel/TimeLeft
+@onready var game_over_panel: Panel = $GameOverPanel
+@onready var phone_panel: Panel = $PhonePanel
+@onready var phone_caller_label: Label = $PhonePanel/PhoneVbox/PhoneCallerLabel
+@onready var phone_date_label: Label = $PhonePanel/PhoneVbox/PhoneDateLabel
+@onready var phone_time_label: Label = $PhonePanel/PhoneVbox/PhoneTimeLabel
+@onready var screen: TextureRect = $Screen
 
 var minutes: int
 var seconds: int
 var milliseconds: int
+var open_panel := false
 var email_opened := false
+var phone_opened := false
 var task_queue := []
 var new_email: String
 var email_responses: Dictionary = {
@@ -79,8 +87,8 @@ var email_responses: Dictionary = {
 }
 
 func _ready() -> void:
-	label.text = choose_email()
-	task_queue.append([email_task, label.text])
+	example_email_label.text = choose_email()
+	task_queue.append([email_task, example_email_label.text])
 
 func _process(delta: float) -> void:
 	var remaining_time = timer.time_left
@@ -94,21 +102,23 @@ func _input(event: InputEvent) -> void:
 		get_tree().quit()
 	
 	if Input.is_action_just_pressed('ui_accept') and email_opened:
-		if email_input.text == label.text:
+		if email_input.text == example_email_label.text:
 			_on_desktop_clicked()
 			task_queue[0][0].queue_free()
 			task_queue.pop_front()
 			email_input.text = ''
+			if !task_queue.size():
+				timer.set_paused(true)
 		else:
-			print('Error!')
 			_on_desktop_clicked()
+			game_over()
 
 func choose_email() -> String:
 	return email_responses[randi_range(1, 60)]
 
 func _on_email_input_text_changed() -> void:
 	var new_email_text: String = email_input.text
-	if new_email_text.length() > label.text.length():
+	if new_email_text.length() > example_email_label.text.length():
 		email_input.text = email_input.cur_email_text
 		email_input.set_caret_line(email_input.cursor_line)
 		email_input.set_caret_column(email_input.cursor_column)
@@ -118,7 +128,7 @@ func _on_email_input_text_changed() -> void:
 	email_input.cursor_column = email_input.get_caret_column()
 	
 	for i in email_input.text.length():
-		if email_input.text[i] != label.text[i]:
+		if email_input.text[i] != example_email_label.text[i]:
 			email_input.add_theme_color_override('font_color', Color(1, 0, 0))
 			break
 		else:
@@ -126,11 +136,20 @@ func _on_email_input_text_changed() -> void:
 
 func _on_desktop_clicked() -> void:
 	if task_queue.size():
-		email_opened = !email_opened
-		email_input.visible = !email_input.visible
-		example_email.visible = !example_email.visible
-		label.text = task_queue[0][1]
-		email_input.grab_focus()
+		if !open_panel or open_panel and email_opened:
+			open_panel = !open_panel
+			email_opened = !email_opened
+			#email_input.visible = !email_input.visible
+			#example_email.visible = !example_email.visible
+			screen.visible = !screen.visible
+			example_email_label.text = task_queue[0][1]
+			email_input.grab_focus()
+
+func _on_phone_phone_clicked() -> void:
+	if !open_panel or open_panel and phone_opened:
+		open_panel = !open_panel
+		phone_opened = !phone_opened
+		phone_panel.visible = !phone_panel.visible
 
 func _on_new_email_pressed() -> void:
 	var email_task_scene = preload('res://Scenes/email_task.tscn')
@@ -143,4 +162,13 @@ func _on_start_timer_pressed() -> void:
 	timer.start()
 
 func _on_timer_timeout() -> void:
-	print('done')
+	game_over()
+
+func _on_restart_pressed() -> void:
+	game_over_panel.visible = false
+
+func game_over():
+	game_over_panel.visible = true
+
+func _on_close_screen_pressed() -> void:
+	_on_desktop_clicked()
