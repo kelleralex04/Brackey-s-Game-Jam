@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://578yfpfkbim6"]
+[gd_scene load_steps=18 format=3 uid="uid://578yfpfkbim6"]
 
 [ext_resource type="Script" path="res://Scenes/main.gd" id="1_7vj2b"]
 [ext_resource type="PackedScene" uid="uid://dlcv1qrrvtfet" path="res://Scenes/desktop.tscn" id="1_dntc4"]
@@ -10,14 +10,24 @@
 [ext_resource type="Texture2D" uid="uid://bpbc0q840g406" path="res://Assets/Sprites/john_office.png" id="7_lthcq"]
 [ext_resource type="Texture2D" uid="uid://dge34nelojwkh" path="res://Assets/Sprites/screen.png" id="8_3seal"]
 [ext_resource type="Texture2D" uid="uid://m0b13jw25sd2" path="res://Assets/Sprites/calendar_icon.png" id="8_om7dv"]
-[ext_resource type="Texture2D" uid="uid://dl8d25nlslgoc" path="res://Assets/Sprites/email_icon.png" id="9_8p3re"]
+[ext_resource type="FontFile" uid="uid://djd4rrfcad36n" path="res://Assets/Fonts/MedodicaRegular.otf" id="10_0t7c4"]
+[ext_resource type="PackedScene" uid="uid://cackktvcert3i" path="res://Scenes/email_icon.tscn" id="11_1ngsi"]
 [ext_resource type="FontFile" uid="uid://vxm7q8aomuc5" path="res://Assets/Fonts/NESCyrillic.ttf" id="11_gyv0t"]
+[ext_resource type="StyleBox" uid="uid://juvuc54cije3" path="res://Assets/StyleBoxes/new_style_box_flat.tres" id="11_v7qv3"]
+[ext_resource type="StyleBox" uid="uid://d0kup8retrj74" path="res://Assets/StyleBoxes/button_style_box.tres" id="14_7raio"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wtqrs"]
+content_margin_left = 6.0
+content_margin_right = 6.0
+bg_color = Color(0.247059, 0.247059, 0.247059, 0.827451)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ddnfx"]
 size = Vector2(57, 55)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_pdtc3"]
-size = Vector2(57, 30)
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_7vj2b")
@@ -71,37 +81,35 @@ texture = ExtResource("8_3seal")
 visible = false
 layout_mode = 0
 offset_left = 133.0
-offset_top = 20.0
+offset_top = 19.0
 offset_right = 413.0
-offset_bottom = 140.0
+offset_bottom = 139.0
+theme_override_fonts/font = ExtResource("10_0t7c4")
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxFlat_wtqrs")
 placeholder_text = "Type here"
 context_menu_enabled = false
 middle_mouse_paste_enabled = false
 wrap_mode = 1
 
-[node name="ExampleEmail" type="Control" parent="Screen"]
+[node name="ExampleEmailPanel" type="Panel" parent="Screen"]
 visible = false
-layout_mode = 3
-anchors_preset = 0
-offset_left = -70.0
-offset_top = -30.0
-offset_right = -30.0
-offset_bottom = 10.0
-
-[node name="ExampleEmailPanel" type="Panel" parent="Screen/ExampleEmail"]
 layout_mode = 0
-offset_left = 203.0
-offset_top = 174.0
-offset_right = 483.0
-offset_bottom = 294.0
+offset_left = 133.0
+offset_top = 137.0
+offset_right = 413.0
+offset_bottom = 257.0
 
-[node name="ExampleEmailLabel" type="Label" parent="Screen/ExampleEmail/ExampleEmailPanel"]
+[node name="ExampleEmailLabel" type="Label" parent="Screen/ExampleEmailPanel"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_fonts/font = ExtResource("10_0t7c4")
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = ExtResource("11_v7qv3")
 text = "Type this"
 autowrap_mode = 2
 
@@ -136,28 +144,48 @@ texture = ExtResource("8_om7dv")
 position = Vector2(28.5, 27.5)
 shape = SubResource("RectangleShape2D_ddnfx")
 
-[node name="EmailIcon" type="Control" parent="Screen"]
-anchors_preset = 0
-offset_left = 39.0
-offset_top = 31.0
-offset_right = 96.0
-offset_bottom = 61.0
+[node name="email_icon" parent="Screen" instance=ExtResource("11_1ngsi")]
+position = Vector2(67, 52)
 
-[node name="TextureRect" type="TextureRect" parent="Screen/EmailIcon"]
+[node name="NoEmailsPanel" type="Panel" parent="Screen"]
+visible = false
+layout_mode = 0
+offset_left = 163.0
+offset_top = 98.0
+offset_right = 362.0
+offset_bottom = 123.0
+
+[node name="NoEmailsLabel" type="Label" parent="Screen/NoEmailsPanel"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("9_8p3re")
-stretch_mode = 2
+theme_override_fonts/font = ExtResource("10_0t7c4")
+theme_override_font_sizes/font_size = 24
+text = "No Emails Remaining"
+horizontal_alignment = 1
 
-[node name="Area2D" type="Area2D" parent="Screen/EmailIcon"]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Screen/EmailIcon/Area2D"]
-position = Vector2(28.5, 15)
-shape = SubResource("RectangleShape2D_pdtc3")
+[node name="CloseEmail" type="Button" parent="Screen"]
+visible = false
+layout_mode = 0
+offset_left = 239.0
+offset_top = 259.0
+offset_right = 286.0
+offset_bottom = 279.0
+theme_override_fonts/font = ExtResource("10_0t7c4")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/focus = ExtResource("14_7raio")
+theme_override_styles/hover_pressed_mirrored = ExtResource("14_7raio")
+theme_override_styles/hover_pressed = ExtResource("14_7raio")
+theme_override_styles/hover_mirrored = ExtResource("14_7raio")
+theme_override_styles/hover = ExtResource("14_7raio")
+theme_override_styles/pressed_mirrored = ExtResource("14_7raio")
+theme_override_styles/pressed = ExtResource("14_7raio")
+theme_override_styles/normal_mirrored = ExtResource("14_7raio")
+theme_override_styles/normal = ExtResource("14_7raio")
+text = "Close"
 
 [node name="PhonePanel" type="Panel" parent="."]
 visible = false
@@ -266,6 +294,8 @@ text = "Try Again?"
 [connection signal="phone_clicked" from="Phone" to="." method="_on_phone_clicked"]
 [connection signal="text_changed" from="Screen/EmailInput" to="." method="_on_email_input_text_changed"]
 [connection signal="pressed" from="Screen/CloseScreen" to="." method="_on_close_screen_pressed"]
+[connection signal="email_icon_clicked" from="Screen/email_icon" to="." method="_on_email_icon_clicked"]
+[connection signal="pressed" from="Screen/CloseEmail" to="." method="_on_close_email_pressed"]
 [connection signal="pressed" from="PhonePanel/ClosePhone" to="." method="_on_close_phone_pressed"]
 [connection signal="pressed" from="NewEmail" to="." method="_on_new_email_pressed"]
 [connection signal="pressed" from="StartTimer" to="." method="_on_start_timer_pressed"]

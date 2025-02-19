@@ -3,9 +3,9 @@ extends Node2D
 signal typing_finished
 
 @onready var desktop: Node2D = $Desktop
-@onready var example_email_label: Label = $Screen/ExampleEmail/ExampleEmailPanel/ExampleEmailLabel
+@onready var example_email_label: Label = $Screen/ExampleEmailPanel/ExampleEmailLabel
 @onready var email_input: email_class = $Screen/EmailInput
-@onready var example_email: Control = $Screen/ExampleEmail
+@onready var example_email: Panel = $Screen/ExampleEmailPanel
 @onready var taskbar: HBoxContainer = $Taskbar
 @onready var email_task: Control = $Taskbar/EmailTask
 @onready var timer: Timer = $Timer
@@ -16,6 +16,8 @@ signal typing_finished
 @onready var phone_company_label: Label = $PhonePanel/PhoneVbox/PhoneCompanyLabel
 @onready var phone_reason_label: Label = $PhonePanel/PhoneVbox/PhoneReasonLabel
 @onready var screen: TextureRect = $Screen
+@onready var no_emails_panel: Panel = $Screen/NoEmailsPanel
+@onready var close_email: Button = $Screen/CloseEmail
 
 var minutes: int
 var seconds: int
@@ -23,7 +25,7 @@ var milliseconds: int
 #var open_panel := false
 var desktop_opened := false
 var phone_opened := false
-var task_queue := []
+var email_queue := []
 var new_email: String
 var cur_company: String
 var cur_caller: String
@@ -157,7 +159,7 @@ var reasons = [
 
 func _ready() -> void:
 	example_email_label.text = choose_email()
-	task_queue.append([email_task, example_email_label.text])
+	email_queue.append([email_task, example_email_label.text])
 	rand = randi_range(0, 49)
 	cur_company = company_employee[rand][0]
 	cur_caller = company_employee[rand][randi_range(1, 3)]
@@ -176,12 +178,20 @@ func _input(event: InputEvent) -> void:
 	
 	if Input.is_action_just_pressed('ui_accept') and desktop_opened:
 		if email_input.text == example_email_label.text:
-			_on_desktop_clicked()
-			task_queue[0][0].queue_free()
-			task_queue.pop_front()
+			#_on_desktop_clicked()
+			email_queue[0][0].queue_free()
+			email_queue.pop_front()
+			var temp_timer = Timer.new()
+			await get_tree().create_timer(0.01).timeout
 			email_input.text = ''
-			if !task_queue.size():
+			if email_queue.size():
+				example_email_label.text = email_queue[0][1]
+				email_input.grab_focus()
+			else:
 				timer.set_paused(true)
+				email_input.visible = false
+				example_email.visible = false
+				close_email.visible = false
 		else:
 			_on_desktop_clicked()
 			game_over()
@@ -208,13 +218,11 @@ func _on_email_input_text_changed() -> void:
 			email_input.add_theme_color_override('font_color', Color(1, 1, 1))
 
 func _on_desktop_clicked() -> void:
-	#if task_queue.size():
+	#if email_queue.size():
 		#if !open_panel or open_panel and desktop_opened:
 			#open_panel = !open_panel
-	desktop_opened = !desktop_opened
-	screen.visible = !screen.visible
-	example_email_label.text = task_queue[0][1]
-	email_input.grab_focus()
+	desktop_opened = true
+	screen.visible = true
 
 func _on_phone_clicked() -> void:
 	#if !open_panel or open_panel and phone_opened:
@@ -257,7 +265,7 @@ func _on_typewriter_timer_timeout():
 func _on_new_email_pressed() -> void:
 	var email_task_scene = preload('res://Scenes/email_task.tscn')
 	var new_email_task = email_task_scene.instantiate()
-	task_queue.append([new_email_task, choose_email()])
+	email_queue.append([new_email_task, choose_email()])
 	
 	taskbar.add_child(new_email_task)
 
@@ -274,7 +282,27 @@ func game_over():
 	game_over_panel.visible = true
 
 func _on_close_screen_pressed() -> void:
-	_on_desktop_clicked()
+	desktop_opened = false
+	screen.visible = false
 
 func _on_close_phone_pressed() -> void:
 	_on_phone_clicked()
+
+func _on_email_icon_clicked() -> void:
+	if email_queue.size():
+		example_email_label.text = email_queue[0][1]
+		email_input.grab_focus()
+		email_input.visible = true
+		example_email.visible = true
+		close_email.visible = true
+	else:
+		no_emails_panel.modulate.a = 1
+		no_emails_panel.visible = true
+		await get_tree().create_timer(1).timeout
+		var tween = get_tree().create_tween()
+		tween.tween_property(no_emails_panel, "modulate:a", 0, 1)
+
+func _on_close_email_pressed() -> void:
+	email_input.visible = false
+	example_email.visible = false
+	close_email.visible = false
