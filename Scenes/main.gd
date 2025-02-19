@@ -24,6 +24,13 @@ signal typing_finished
 @onready var contact_search: LineEdit = $Screen/CalendarPanel/ContactSearch
 @onready var search_label: Label = $Screen/CalendarPanel/SearchLabel
 @onready var add_attendee_1: Button = $Screen/CalendarPanel/AttendeesContainer/AddAttendee1
+@onready var add_attendee_2: Button = $Screen/CalendarPanel/AttendeesContainer/AddAttendee2
+@onready var add_attendee_3: Button = $Screen/CalendarPanel/AttendeesContainer/AddAttendee3
+@onready var continue_call: Button = $PhonePanel/ContinueCall
+@onready var phone_vbox: VBoxContainer = $PhonePanel/PhoneVbox
+@onready var meeting_vbox: VBoxContainer = $PhonePanel/MeetingVbox
+@onready var meeting_attendees_label: Label = $PhonePanel/MeetingVbox/MeetingAttendees
+@onready var minute_picker: SpinBox = $Screen/CalendarPanel/MinutePicker
 
 var minutes: int
 var seconds: int
@@ -32,6 +39,7 @@ var milliseconds: int
 var desktop_opened := false
 var phone_opened := false
 var email_queue := []
+var meeting_queue := []
 var new_email: String
 var cur_company: String
 var cur_caller: String
@@ -42,8 +50,26 @@ var full_text: String
 var typing_speed: float
 var typewriter_index := 0
 var typewriter_timer: Timer
-var cur_attendee = 1
+var cur_attendee_button_index := 0
+var cur_attendee_button: Button
+var meeting_attendees: Array
+var email_opened := false
+var icon_opened := false
 
+var calendar_list: Array = [
+	['Jan', 31],
+	['Feb', 29],
+	['Mar', 31],
+	['Apr', 30],
+	['May', 31],
+	['Jun', 30],
+	['Jul', 31],
+	['Aug', 31],
+	['Sep', 30],
+	['Oct', 31],
+	['Nov', 30],
+	['Dec', 31]
+]
 var email_responses: Dictionary = {
 	1: "I'd explain why this won't work, but I have a feeling you're not big on listening to reason.",
 	2: "It's cute that you think this is my problem.",
@@ -161,13 +187,19 @@ var company_employee = [
 var reasons = [
 	'Schedule Meeting',
 	'Make Order',
-	'Take Message'
+	'Book Flight',
 ]
 var all_names = []
+var attendee_buttons: Array
 
 #Other tasks: order lunch, hand out lunch
 
 func _ready() -> void:
+	format_minutes(minute_picker.value)
+	
+	cur_attendee_button = add_attendee_1
+	attendee_buttons = [add_attendee_1, add_attendee_2, add_attendee_3]
+	
 	example_email_label.text = choose_email()
 	email_queue.append([email_task, example_email_label.text])
 	
@@ -180,7 +212,8 @@ func _ready() -> void:
 	rand = randi_range(0, 49)
 	cur_company = company_employee[rand][0]
 	cur_caller = company_employee[rand][randi_range(1, 3)]
-	cur_reason = reasons[randi_range(0, 2)]
+	#cur_reason = reasons[randi_range(0, 2)]
+	cur_reason = reasons[0]
 	
 	populate_list(all_names)
 
@@ -195,7 +228,7 @@ func _input(event: InputEvent) -> void:
 	if Input.is_action_just_pressed("ui_cancel"):
 		get_tree().quit()
 	
-	if Input.is_action_just_pressed('ui_accept') and desktop_opened:
+	if Input.is_action_just_pressed('ui_accept') and email_opened:
 		send_email()
 
 func open_close(nodes: Array, open: bool):
@@ -258,14 +291,16 @@ func _on_phone_clicked() -> void:
 	else:
 		phone_call()
 	phone_opened = !phone_opened
-	phone_panel.visible = true
+	phone_panel.visible = !phone_panel.visible
 
 func phone_call():
-	call_typewriter(phone_caller_label, 'Caller: ' + cur_caller)
+	call_typewriter(phone_caller_label, 'Caller:\n' + cur_caller)
 	await typing_finished
-	call_typewriter(phone_company_label, 'Company: ' + cur_company)
+	call_typewriter(phone_company_label, 'Company:\n' + cur_company)
 	await typing_finished
-	call_typewriter(phone_reason_label, 'Reason: ' + cur_reason)
+	call_typewriter(phone_reason_label, 'Reason:\n' + cur_reason)
+	await typing_finished
+	continue_call.visible = true
 
 func call_typewriter(label: Label ,text: String):
 	typewriter_timer = Timer.new()
@@ -313,25 +348,36 @@ func _on_close_phone_pressed() -> void:
 	_on_phone_clicked()
 
 func _on_email_icon_clicked() -> void:
-	if email_queue.size():
-		example_email_label.text = email_queue[0][1]
-		email_input.grab_focus()
-		open_close([email_input, example_email, close_email, send], true)
-	else:
-		no_emails_panel.modulate.a = 1
-		no_emails_panel.visible = true
-		await get_tree().create_timer(1).timeout
-		var tween = get_tree().create_tween()
-		tween.tween_property(no_emails_panel, "modulate:a", 0, 1)
+	if !icon_opened:
+		if email_queue.size():
+			example_email_label.text = email_queue[0][1]
+			email_input.grab_focus()
+			email_opened = true
+			icon_opened = true
+			open_close([email_input, example_email, close_email, send], true)
+			
+		else:
+			no_emails_panel.modulate.a = 1
+			no_emails_panel.visible = true
+			await get_tree().create_timer(1).timeout
+			var tween = get_tree().create_tween()
+			tween.tween_property(no_emails_panel, "modulate:a", 0, 1)
 
 func _on_close_email_pressed() -> void:
+	email_opened = false
+	icon_opened = false
 	open_close([email_input, example_email, close_email, send], false)
 
 func _on_send_pressed() -> void:
 	send_email()
 
 func _on_calendar_icon_clicked() -> void:
-	calendar_panel.visible = true
+	if !icon_opened:
+		if meeting_queue.size():
+			icon_opened = true
+			calendar_panel.visible = true
+		else:
+			print('no meetings')
 
 func populate_list(names):
 	contact_list.clear()
@@ -352,11 +398,55 @@ func _on_contact_search_text_changed(new_text: String) -> void:
 	filter_names(new_text)
 
 func _on_add_attendee_1_pressed() -> void:
+	attendee_button_pressed()
+	
+func _on_add_attendee_2_pressed() -> void:
+	attendee_button_pressed()
+	
+func _on_add_attendee_3_pressed() -> void:
+	attendee_button_pressed()
+
+func attendee_button_pressed():
 	open_close([contact_list, contact_search, search_label], true)
 
 func _on_contact_list_item_selected(index: int) -> void:
-	add_attendee_1.text = contact_list.get_item_text(index)
+	cur_attendee_button.text = contact_list.get_item_text(index)
 
 func _on_contact_list_item_activated(index: int) -> void:
-	add_attendee_1.disabled = true
+	cur_attendee_button.disabled = true
+	if cur_attendee_button_index < 2:
+		cur_attendee_button_index += 1
+		cur_attendee_button = attendee_buttons[cur_attendee_button_index]
+		cur_attendee_button.visible = true
 	open_close([contact_list, contact_search, search_label], false)
+
+func _on_add_to_calendar_pressed() -> void:
+	pass # Replace with function body.
+
+func _on_continue_call_pressed() -> void:
+	if cur_reason == 'Schedule Meeting':
+		meeting_attendees = []
+		for i in randi_range(1, 3):
+			meeting_attendees.append(company_employee[rand][i + 1])
+		var month = randi_range(0, 11)
+		meeting_queue.append([meeting_attendees, calendar_list[month][0], randi_range(1, calendar_list[month][1])])
+		var all_attendees = ''
+		for i in meeting_attendees:
+			all_attendees += '\n' + i
+		phone_vbox.visible = false
+		meeting_vbox.visible = true
+		call_typewriter(meeting_attendees_label, all_attendees)
+
+func format_minutes(value: int):
+	var opt_zero: String = '0' if value < 10 else ''
+	minute_picker.prefix = opt_zero
+
+func _on_minute_picker_value_changed(value: float) -> void:
+	format_minutes(value)
+
+func _on_minute_picker_focus_exited() -> void:
+	format_minutes(minute_picker.value)
+
+func _on_close_calendar_pressed() -> void:
+	icon_opened = false
+	calendar_panel.visible = false
