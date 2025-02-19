@@ -18,6 +18,12 @@ signal typing_finished
 @onready var screen: TextureRect = $Screen
 @onready var no_emails_panel: Panel = $Screen/NoEmailsPanel
 @onready var close_email: Button = $Screen/CloseEmail
+@onready var send: Button = $Screen/Send
+@onready var calendar_panel: Panel = $Screen/CalendarPanel
+@onready var contact_list: ItemList = $Screen/CalendarPanel/ContactList
+@onready var contact_search: LineEdit = $Screen/CalendarPanel/ContactSearch
+@onready var search_label: Label = $Screen/CalendarPanel/SearchLabel
+@onready var add_attendee_1: Button = $Screen/CalendarPanel/AttendeesContainer/AddAttendee1
 
 var minutes: int
 var seconds: int
@@ -36,6 +42,7 @@ var full_text: String
 var typing_speed: float
 var typewriter_index := 0
 var typewriter_timer: Timer
+var cur_attendee = 1
 
 var email_responses: Dictionary = {
 	1: "I'd explain why this won't work, but I have a feeling you're not big on listening to reason.",
@@ -156,16 +163,26 @@ var reasons = [
 	'Make Order',
 	'Take Message'
 ]
+var all_names = []
 
 #Other tasks: order lunch, hand out lunch
 
 func _ready() -> void:
 	example_email_label.text = choose_email()
 	email_queue.append([email_task, example_email_label.text])
+	
+	for i in company_employee:
+		for j in 3:
+			all_names.append(i[j + 1])
+	
+	all_names.sort()
+	
 	rand = randi_range(0, 49)
 	cur_company = company_employee[rand][0]
 	cur_caller = company_employee[rand][randi_range(1, 3)]
 	cur_reason = reasons[randi_range(0, 2)]
+	
+	populate_list(all_names)
 
 func _process(delta: float) -> void:
 	var remaining_time = timer.time_left
@@ -179,24 +196,29 @@ func _input(event: InputEvent) -> void:
 		get_tree().quit()
 	
 	if Input.is_action_just_pressed('ui_accept') and desktop_opened:
-		if email_input.text == example_email_label.text:
-			#_on_desktop_clicked()
-			email_queue[0][0].queue_free()
-			email_queue.pop_front()
-			var temp_timer = Timer.new()
-			await get_tree().create_timer(0.01).timeout
-			email_input.text = ''
-			if email_queue.size():
-				example_email_label.text = email_queue[0][1]
-				email_input.grab_focus()
-			else:
-				timer.set_paused(true)
-				email_input.visible = false
-				example_email.visible = false
-				close_email.visible = false
+		send_email()
+
+func open_close(nodes: Array, open: bool):
+	for i in nodes:
+		i.visible = open
+
+func send_email():
+	if email_input.text == example_email_label.text:
+		#_on_desktop_clicked()
+		email_queue[0][0].queue_free()
+		email_queue.pop_front()
+		var temp_timer = Timer.new()
+		await get_tree().create_timer(0.01).timeout
+		email_input.text = ''
+		if email_queue.size():
+			example_email_label.text = email_queue[0][1]
+			email_input.grab_focus()
 		else:
-			_on_desktop_clicked()
-			game_over()
+			timer.set_paused(true)
+			open_close([email_input, example_email, close_email, send], false)
+	else:
+		_on_desktop_clicked()
+		game_over()
 
 func choose_email() -> String:
 	return email_responses[randi_range(1, 60)]
@@ -236,7 +258,7 @@ func _on_phone_clicked() -> void:
 	else:
 		phone_call()
 	phone_opened = !phone_opened
-	phone_panel.visible = !phone_panel.visible
+	phone_panel.visible = true
 
 func phone_call():
 	call_typewriter(phone_caller_label, 'Caller: ' + cur_caller)
@@ -294,9 +316,7 @@ func _on_email_icon_clicked() -> void:
 	if email_queue.size():
 		example_email_label.text = email_queue[0][1]
 		email_input.grab_focus()
-		email_input.visible = true
-		example_email.visible = true
-		close_email.visible = true
+		open_close([email_input, example_email, close_email, send], true)
 	else:
 		no_emails_panel.modulate.a = 1
 		no_emails_panel.visible = true
@@ -305,6 +325,38 @@ func _on_email_icon_clicked() -> void:
 		tween.tween_property(no_emails_panel, "modulate:a", 0, 1)
 
 func _on_close_email_pressed() -> void:
-	email_input.visible = false
-	example_email.visible = false
-	close_email.visible = false
+	open_close([email_input, example_email, close_email, send], false)
+
+func _on_send_pressed() -> void:
+	send_email()
+
+func _on_calendar_icon_clicked() -> void:
+	calendar_panel.visible = true
+
+func populate_list(names):
+	contact_list.clear()
+	for name in names:
+		contact_list.add_item(name)
+
+func filter_names(new_text):
+	if !new_text:
+		populate_list(all_names)
+	else:
+		var filtered = []
+		for name in all_names:
+			if new_text.to_lower() in name.to_lower():
+				filtered.append(name)
+		populate_list(filtered)
+
+func _on_contact_search_text_changed(new_text: String) -> void:
+	filter_names(new_text)
+
+func _on_add_attendee_1_pressed() -> void:
+	open_close([contact_list, contact_search, search_label], true)
+
+func _on_contact_list_item_selected(index: int) -> void:
+	add_attendee_1.text = contact_list.get_item_text(index)
+
+func _on_contact_list_item_activated(index: int) -> void:
+	add_attendee_1.disabled = true
+	open_close([contact_list, contact_search, search_label], false)

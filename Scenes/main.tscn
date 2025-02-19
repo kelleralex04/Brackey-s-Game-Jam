@@ -9,12 +9,12 @@
 [ext_resource type="Texture2D" uid="uid://lkv7pcombhf5" path="res://Assets/Sprites/desk.png" id="7_8wov8"]
 [ext_resource type="Texture2D" uid="uid://bpbc0q840g406" path="res://Assets/Sprites/john_office.png" id="7_lthcq"]
 [ext_resource type="Texture2D" uid="uid://dge34nelojwkh" path="res://Assets/Sprites/screen.png" id="8_3seal"]
-[ext_resource type="Texture2D" uid="uid://m0b13jw25sd2" path="res://Assets/Sprites/calendar_icon.png" id="8_om7dv"]
 [ext_resource type="FontFile" uid="uid://djd4rrfcad36n" path="res://Assets/Fonts/MedodicaRegular.otf" id="10_0t7c4"]
 [ext_resource type="PackedScene" uid="uid://cackktvcert3i" path="res://Scenes/email_icon.tscn" id="11_1ngsi"]
 [ext_resource type="FontFile" uid="uid://vxm7q8aomuc5" path="res://Assets/Fonts/NESCyrillic.ttf" id="11_gyv0t"]
 [ext_resource type="StyleBox" uid="uid://juvuc54cije3" path="res://Assets/StyleBoxes/new_style_box_flat.tres" id="11_v7qv3"]
 [ext_resource type="StyleBox" uid="uid://d0kup8retrj74" path="res://Assets/StyleBoxes/button_style_box.tres" id="14_7raio"]
+[ext_resource type="PackedScene" uid="uid://b5v47ij16ld7g" path="res://Scenes/calendar_icon.tscn" id="14_o0kic"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wtqrs"]
 content_margin_left = 6.0
@@ -26,8 +26,9 @@ border_width_right = 2
 border_width_bottom = 2
 border_color = Color(0, 0, 0, 1)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_ddnfx"]
-size = Vector2(57, 55)
+[sub_resource type="Theme" id="Theme_dmc7c"]
+default_font = ExtResource("10_0t7c4")
+default_font_size = 24
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_7vj2b")
@@ -70,7 +71,6 @@ alignment = 1
 layout_mode = 2
 
 [node name="Screen" type="TextureRect" parent="."]
-visible = false
 offset_left = 126.0
 offset_top = 24.0
 offset_right = 626.0
@@ -80,9 +80,9 @@ texture = ExtResource("8_3seal")
 [node name="EmailInput" parent="Screen" instance=ExtResource("3_im7m8")]
 visible = false
 layout_mode = 0
-offset_left = 133.0
+offset_left = 114.0
 offset_top = 19.0
-offset_right = 413.0
+offset_right = 441.0
 offset_bottom = 139.0
 theme_override_fonts/font = ExtResource("10_0t7c4")
 theme_override_font_sizes/font_size = 24
@@ -95,9 +95,9 @@ wrap_mode = 1
 [node name="ExampleEmailPanel" type="Panel" parent="Screen"]
 visible = false
 layout_mode = 0
-offset_left = 133.0
+offset_left = 114.0
 offset_top = 137.0
-offset_right = 413.0
+offset_right = 441.0
 offset_bottom = 257.0
 
 [node name="ExampleEmailLabel" type="Label" parent="Screen/ExampleEmailPanel"]
@@ -112,40 +112,6 @@ theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = ExtResource("11_v7qv3")
 text = "Type this"
 autowrap_mode = 2
-
-[node name="CloseScreen" type="Button" parent="Screen"]
-layout_mode = 0
-offset_left = 452.0
-offset_top = 17.0
-offset_right = 483.0
-offset_bottom = 48.0
-text = "x"
-
-[node name="CalendarIcon" type="Control" parent="Screen"]
-custom_minimum_size = Vector2(57, 55)
-anchors_preset = 0
-offset_left = 39.0
-offset_top = 93.0
-offset_right = 96.0
-offset_bottom = 148.0
-
-[node name="TextureRect" type="TextureRect" parent="Screen/CalendarIcon"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = ExtResource("8_om7dv")
-
-[node name="Area2D" type="Area2D" parent="Screen/CalendarIcon"]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Screen/CalendarIcon/Area2D"]
-position = Vector2(28.5, 27.5)
-shape = SubResource("RectangleShape2D_ddnfx")
-
-[node name="email_icon" parent="Screen" instance=ExtResource("11_1ngsi")]
-position = Vector2(67, 52)
 
 [node name="NoEmailsPanel" type="Panel" parent="Screen"]
 visible = false
@@ -167,13 +133,153 @@ theme_override_font_sizes/font_size = 24
 text = "No Emails Remaining"
 horizontal_alignment = 1
 
+[node name="CalendarPanel" type="Panel" parent="Screen"]
+layout_mode = 0
+offset_left = 117.0
+offset_top = 21.0
+offset_right = 438.0
+offset_bottom = 251.0
+
+[node name="SearchLabel" type="Label" parent="Screen/CalendarPanel"]
+visible = false
+layout_mode = 0
+offset_left = 10.0
+offset_top = 3.0
+offset_right = 76.0
+offset_bottom = 27.0
+theme_override_font_sizes/font_size = 24
+text = "Search:"
+
+[node name="ContactSearch" type="LineEdit" parent="Screen/CalendarPanel"]
+visible = false
+layout_mode = 0
+offset_left = 82.0
+offset_right = 321.0
+offset_bottom = 31.0
+theme_override_font_sizes/font_size = 24
+
+[node name="ContactList" type="ItemList" parent="Screen/CalendarPanel"]
+visible = false
+layout_mode = 0
+offset_left = 148.0
+offset_top = 40.0
+offset_right = 321.0
+offset_bottom = 188.0
+theme_override_fonts/font = ExtResource("10_0t7c4")
+theme_override_font_sizes/font_size = 24
+
+[node name="AttendeesLabel" type="Label" parent="Screen/CalendarPanel"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 34.0
+offset_right = 110.0
+offset_bottom = 58.0
+theme_override_font_sizes/font_size = 24
+text = "Attendees:"
+
+[node name="AttendeesContainer" type="VBoxContainer" parent="Screen/CalendarPanel"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 60.0
+offset_right = 144.0
+offset_bottom = 164.0
+
+[node name="AddAttendee1" type="Button" parent="Screen/CalendarPanel/AttendeesContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+toggle_mode = true
+text = "Add"
+text_overrun_behavior = 3
+
+[node name="AddAttendee2" type="Button" parent="Screen/CalendarPanel/AttendeesContainer"]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Add"
+
+[node name="AddAttendee3" type="Button" parent="Screen/CalendarPanel/AttendeesContainer"]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Add"
+
+[node name="MonthPicker" type="OptionButton" parent="Screen/CalendarPanel"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 190.0
+offset_right = 69.0
+offset_bottom = 222.0
+theme_override_font_sizes/font_size = 24
+item_count = 12
+popup/item_0/text = "Jan"
+popup/item_1/text = "Feb"
+popup/item_1/id = 1
+popup/item_2/text = "Mar"
+popup/item_2/id = 2
+popup/item_3/text = "Apr"
+popup/item_3/id = 3
+popup/item_4/text = "May"
+popup/item_4/id = 4
+popup/item_5/text = "Jun"
+popup/item_5/id = 5
+popup/item_6/text = "Jul"
+popup/item_6/id = 6
+popup/item_7/text = "Aug"
+popup/item_7/id = 7
+popup/item_8/text = "Sep"
+popup/item_8/id = 8
+popup/item_9/text = "Oct"
+popup/item_9/id = 9
+popup/item_10/text = "Nov"
+popup/item_10/id = 10
+popup/item_11/text = "Dec"
+popup/item_11/id = 11
+
+[node name="MonthLabel" type="Label" parent="Screen/CalendarPanel"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 165.0
+offset_right = 63.0
+offset_bottom = 189.0
+theme_override_font_sizes/font_size = 24
+text = "Month"
+
+[node name="DayLabel" type="Label" parent="Screen/CalendarPanel"]
+layout_mode = 0
+offset_left = 89.0
+offset_top = 165.0
+offset_right = 121.0
+offset_bottom = 189.0
+theme_override_font_sizes/font_size = 24
+text = "Day"
+
+[node name="SpinBox" type="SpinBox" parent="Screen/CalendarPanel"]
+layout_mode = 0
+offset_left = 73.0
+offset_top = 190.0
+offset_right = 145.0
+offset_bottom = 222.0
+theme = SubResource("Theme_dmc7c")
+min_value = 1.0
+max_value = 31.0
+value = 1.0
+
+[node name="Button" type="Button" parent="Screen/CalendarPanel"]
+layout_mode = 0
+offset_left = 160.0
+offset_top = 193.0
+offset_right = 311.0
+offset_bottom = 225.0
+theme_override_font_sizes/font_size = 24
+text = "Add to Calendar"
+
 [node name="CloseEmail" type="Button" parent="Screen"]
 visible = false
 layout_mode = 0
-offset_left = 239.0
-offset_top = 259.0
-offset_right = 286.0
-offset_bottom = 279.0
+offset_left = 421.0
+offset_top = 20.0
+offset_right = 440.0
+offset_bottom = 42.0
 theme_override_fonts/font = ExtResource("10_0t7c4")
 theme_override_font_sizes/font_size = 20
 theme_override_styles/focus = ExtResource("14_7raio")
@@ -185,7 +291,41 @@ theme_override_styles/pressed_mirrored = ExtResource("14_7raio")
 theme_override_styles/pressed = ExtResource("14_7raio")
 theme_override_styles/normal_mirrored = ExtResource("14_7raio")
 theme_override_styles/normal = ExtResource("14_7raio")
-text = "Close"
+text = "x"
+
+[node name="Send" type="Button" parent="Screen"]
+visible = false
+layout_mode = 0
+offset_left = 396.0
+offset_top = 112.0
+offset_right = 440.0
+offset_bottom = 138.0
+theme_override_fonts/font = ExtResource("10_0t7c4")
+theme_override_font_sizes/font_size = 24
+theme_override_styles/focus = ExtResource("14_7raio")
+theme_override_styles/hover_pressed_mirrored = ExtResource("14_7raio")
+theme_override_styles/hover_pressed = ExtResource("14_7raio")
+theme_override_styles/hover_mirrored = ExtResource("14_7raio")
+theme_override_styles/hover = ExtResource("14_7raio")
+theme_override_styles/pressed_mirrored = ExtResource("14_7raio")
+theme_override_styles/pressed = ExtResource("14_7raio")
+theme_override_styles/normal_mirrored = ExtResource("14_7raio")
+theme_override_styles/normal = ExtResource("14_7raio")
+text = "Send"
+
+[node name="CloseScreen" type="Button" parent="Screen"]
+layout_mode = 0
+offset_left = 452.0
+offset_top = 17.0
+offset_right = 483.0
+offset_bottom = 48.0
+text = "x"
+
+[node name="email_icon" parent="Screen" instance=ExtResource("11_1ngsi")]
+position = Vector2(67, 52)
+
+[node name="calendar_icon" parent="Screen" instance=ExtResource("14_o0kic")]
+position = Vector2(67, 113)
 
 [node name="PhonePanel" type="Panel" parent="."]
 visible = false
@@ -239,9 +379,9 @@ text = "New Email"
 
 [node name="StartTimer" type="Button" parent="."]
 offset_left = 99.0
-offset_top = 326.0
+offset_top = 327.0
 offset_right = 194.0
-offset_bottom = 357.0
+offset_bottom = 358.0
 text = "Start Timer"
 
 [node name="TimerPanel" type="Panel" parent="."]
@@ -293,9 +433,15 @@ text = "Try Again?"
 [connection signal="desktop_clicked" from="Desktop" to="." method="_on_desktop_clicked"]
 [connection signal="phone_clicked" from="Phone" to="." method="_on_phone_clicked"]
 [connection signal="text_changed" from="Screen/EmailInput" to="." method="_on_email_input_text_changed"]
+[connection signal="text_changed" from="Screen/CalendarPanel/ContactSearch" to="." method="_on_contact_search_text_changed"]
+[connection signal="item_activated" from="Screen/CalendarPanel/ContactList" to="." method="_on_contact_list_item_activated"]
+[connection signal="item_selected" from="Screen/CalendarPanel/ContactList" to="." method="_on_contact_list_item_selected"]
+[connection signal="pressed" from="Screen/CalendarPanel/AttendeesContainer/AddAttendee1" to="." method="_on_add_attendee_1_pressed"]
+[connection signal="pressed" from="Screen/CloseEmail" to="." method="_on_close_email_pressed"]
+[connection signal="pressed" from="Screen/Send" to="." method="_on_send_pressed"]
 [connection signal="pressed" from="Screen/CloseScreen" to="." method="_on_close_screen_pressed"]
 [connection signal="email_icon_clicked" from="Screen/email_icon" to="." method="_on_email_icon_clicked"]
-[connection signal="pressed" from="Screen/CloseEmail" to="." method="_on_close_email_pressed"]
+[connection signal="calendar_icon_clicked" from="Screen/calendar_icon" to="." method="_on_calendar_icon_clicked"]
 [connection signal="pressed" from="PhonePanel/ClosePhone" to="." method="_on_close_phone_pressed"]
 [connection signal="pressed" from="NewEmail" to="." method="_on_new_email_pressed"]
 [connection signal="pressed" from="StartTimer" to="." method="_on_start_timer_pressed"]
