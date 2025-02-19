@@ -157,6 +157,8 @@ var reasons = [
 	'Take Message'
 ]
 
+#Other tasks: order lunch, hand out lunch
+
 func _ready() -> void:
 	example_email_label.text = choose_email()
 	email_queue.append([email_task, example_email_label.text])
