@@ -30,6 +30,11 @@ signal typing_finished
 @onready var phone_vbox: VBoxContainer = $PhonePanel/PhoneVbox
 @onready var meeting_vbox: VBoxContainer = $PhonePanel/MeetingVbox
 @onready var meeting_attendees_label: Label = $PhonePanel/MeetingVbox/MeetingAttendees
+@onready var meeting_date_label: Label = $PhonePanel/MeetingVbox/MeetingDate
+@onready var meeting_time_label: Label = $PhonePanel/MeetingVbox/MeetingTime
+@onready var month_picker: OptionButton = $Screen/CalendarPanel/MonthPicker
+@onready var day_picker: SpinBox = $Screen/CalendarPanel/DayPicker
+@onready var hour_picker: SpinBox = $Screen/CalendarPanel/HourPicker
 @onready var minute_picker: SpinBox = $Screen/CalendarPanel/MinutePicker
 
 var minutes: int
@@ -195,6 +200,8 @@ var attendee_buttons: Array
 #Other tasks: order lunch, hand out lunch
 
 func _ready() -> void:
+	#typing_speed = randf_range(0.05, 0.15)
+	typing_speed = 0.01
 	format_minutes(minute_picker.value)
 	
 	cur_attendee_button = add_attendee_1
@@ -306,7 +313,7 @@ func call_typewriter(label: Label ,text: String):
 	typewriter_timer = Timer.new()
 	full_text = text
 	cur_label = label
-	typewriter_timer.wait_time = randf_range(0.05, 0.15)
+	typewriter_timer.wait_time = typing_speed
 	typewriter_timer.autostart = true
 	typewriter_timer.one_shot = false
 	typewriter_timer.timeout.connect(_on_typewriter_timer_timeout)
@@ -421,21 +428,36 @@ func _on_contact_list_item_activated(index: int) -> void:
 	open_close([contact_list, contact_search, search_label], false)
 
 func _on_add_to_calendar_pressed() -> void:
-	pass # Replace with function body.
+	if month_picker.text == meeting_queue[0][1] and int(day_picker.value) == int(meeting_queue[0][2]) and str(hour_picker.value) == meeting_queue[0][3] and str(minute_picker.value) == meeting_queue[0][4]:
+		for i in meeting_queue[0][0].size():
+			if meeting_queue[0][0][i] == attendee_buttons[i].text:
+				print('good')
+			else:
+				game_over()
+	else:
+		game_over()
 
 func _on_continue_call_pressed() -> void:
+	continue_call.visible = false
 	if cur_reason == 'Schedule Meeting':
 		meeting_attendees = []
 		for i in randi_range(1, 3):
 			meeting_attendees.append(company_employee[rand][i + 1])
 		var month = randi_range(0, 11)
-		meeting_queue.append([meeting_attendees, calendar_list[month][0], randi_range(1, calendar_list[month][1])])
+		var minute = randi_range(1, 59)
+		var opt_zero: String = '0' if minute < 10 else ''
+		minute = opt_zero + str(minute)
+		meeting_queue.append([meeting_attendees, calendar_list[month][0], randi_range(1, calendar_list[month][1]) , str(randi_range(0, 23)),  minute])
 		var all_attendees = ''
 		for i in meeting_attendees:
 			all_attendees += '\n' + i
 		phone_vbox.visible = false
 		meeting_vbox.visible = true
-		call_typewriter(meeting_attendees_label, all_attendees)
+		call_typewriter(meeting_attendees_label, 'Attendees: ' + all_attendees)
+		await typing_finished
+		call_typewriter(meeting_date_label, 'Date:\n' + meeting_queue[0][1] + ' ' + str(meeting_queue[0][2]) + '\n')
+		await typing_finished
+		call_typewriter(meeting_date_label, 'Time:\n' + meeting_queue[0][3] + ':' + meeting_queue[0][4])
 
 func format_minutes(value: int):
 	var opt_zero: String = '0' if value < 10 else ''
