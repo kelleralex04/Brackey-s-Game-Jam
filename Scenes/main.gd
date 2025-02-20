@@ -417,27 +417,35 @@ func _on_contact_search_text_changed(new_text: String) -> void:
 	filter_names(new_text)
 
 func _on_add_attendee_1_pressed() -> void:
-	attendee_button_pressed()
-	
-func _on_add_attendee_2_pressed() -> void:
-	attendee_button_pressed()
-	
-func _on_add_attendee_3_pressed() -> void:
-	attendee_button_pressed()
+	#attendee_button_pressed()
+	_on_contact_list_item_activated(contact_list.get_selected_items()[0])
 
-func attendee_button_pressed():
-	open_close([contact_list, contact_search, search_label], true)
+func _on_add_attendee_2_pressed() -> void:
+	#attendee_button_pressed()
+	_on_contact_list_item_activated(contact_list.get_selected_items()[0])
+
+func _on_add_attendee_3_pressed() -> void:
+	#attendee_button_pressed()
+	_on_contact_list_item_activated(contact_list.get_selected_items()[0])
+
+#func attendee_button_pressed():
+	#cur_attendee_button.text = contact_list.get_item_text(contact_list.get_selected_items()[0])
+	#open_close([contact_list, contact_search, search_label], true)
 
 func _on_contact_list_item_selected(index: int) -> void:
-	cur_attendee_button.text = contact_list.get_item_text(index)
+	cur_attendee_button.disabled = false
+	#cur_attendee_button.text = contact_list.get_item_text(index)
 
 func _on_contact_list_item_activated(index: int) -> void:
+	cur_attendee_button.text = contact_list.get_item_text(index)
 	cur_attendee_button.disabled = true
 	if cur_attendee_button_index < 2:
 		cur_attendee_button_index += 1
 		cur_attendee_button = attendee_buttons[cur_attendee_button_index]
 		cur_attendee_button.visible = true
-	open_close([contact_list, contact_search, search_label], false)
+	contact_search.text = ''
+	_on_contact_search_text_changed('')
+	#open_close([contact_list, contact_search, search_label], false)
 
 func _on_add_to_calendar_pressed() -> void:
 	if month_picker.text == meeting_queue[0][1] and int(day_picker.value) == int(meeting_queue[0][2]) and str(hour_picker.value) == meeting_queue[0][3] and str(minute_picker.value) == meeting_queue[0][4]:
@@ -454,6 +462,15 @@ func _on_add_to_calendar_pressed() -> void:
 			meeting_count_label.text = str(meeting_queue.size())
 			if !meeting_queue.size():
 				calendar_panel.visible = false
+
+func reset_calendar():
+	for i in attendee_buttons:
+		i.text = 'Add'
+		i.disabled = true
+	cur_attendee_button_index = 0
+	cur_attendee_button = add_attendee_1
+	add_attendee_1.visible = true
+	open_close([add_attendee_2, add_attendee_3], false)
 
 func _on_continue_call_pressed() -> void:
 	continue_call.visible = false
@@ -497,3 +514,6 @@ func _on_hour_picker_focus_exited() -> void:
 func _on_close_calendar_pressed() -> void:
 	icon_opened = false
 	calendar_panel.visible = false
+
+func _on_reset_calendar_pressed() -> void:
+	reset_calendar()
