@@ -200,9 +200,17 @@ var attendee_buttons: Array
 #Other tasks: order lunch, hand out lunch
 
 func _ready() -> void:
+	var line_edit = hour_picker.get_line_edit()
+	line_edit.context_menu_enabled = false
+	line_edit = minute_picker.get_line_edit()
+	line_edit.context_menu_enabled = false
+	line_edit = day_picker.get_line_edit()
+	line_edit.context_menu_enabled = false
+	
 	#typing_speed = randf_range(0.05, 0.15)
 	typing_speed = 0.01
-	format_minutes(minute_picker.value)
+	format_time(minute_picker.value, minute_picker)
+	format_time(hour_picker.value, hour_picker)
 	
 	cur_attendee_button = add_attendee_1
 	attendee_buttons = [add_attendee_1, add_attendee_2, add_attendee_3]
@@ -459,15 +467,21 @@ func _on_continue_call_pressed() -> void:
 		await typing_finished
 		call_typewriter(meeting_date_label, 'Time:\n' + meeting_queue[0][3] + ':' + meeting_queue[0][4])
 
-func format_minutes(value: int):
+func format_time(value: int, node: SpinBox):
 	var opt_zero: String = '0' if value < 10 else ''
-	minute_picker.prefix = opt_zero
+	node.prefix = opt_zero
 
 func _on_minute_picker_value_changed(value: float) -> void:
-	format_minutes(value)
+	format_time(value, minute_picker)
 
 func _on_minute_picker_focus_exited() -> void:
-	format_minutes(minute_picker.value)
+	format_time(minute_picker.value, minute_picker)
+	
+func _on_hour_picker_value_changed(value: float) -> void:
+	format_time(value, hour_picker)
+
+func _on_hour_picker_focus_exited() -> void:
+	format_time(hour_picker.value, hour_picker)
 
 func _on_close_calendar_pressed() -> void:
 	icon_opened = false
