@@ -6,7 +6,8 @@ signal typing_finished
 @onready var example_email_label: Label = $Screen/ExampleEmailPanel/ExampleEmailLabel
 @onready var email_input: email_class = $Screen/EmailInput
 @onready var example_email: Panel = $Screen/ExampleEmailPanel
-@onready var taskbar: HBoxContainer = $Taskbar
+@onready var taskbar_panel: Panel = $TaskbarPanel
+@onready var email_count_label: Label = $TaskbarPanel/EmailCountLabel
 @onready var email_task: Control = $Taskbar/EmailTask
 @onready var timer: Timer = $Timer
 @onready var time_left: Label = $TimerPanel/TimeLeft
@@ -36,6 +37,7 @@ signal typing_finished
 @onready var day_picker: SpinBox = $Screen/CalendarPanel/DayPicker
 @onready var hour_picker: SpinBox = $Screen/CalendarPanel/HourPicker
 @onready var minute_picker: SpinBox = $Screen/CalendarPanel/MinutePicker
+@onready var meeting_count_label: Label = $TaskbarPanel/MeetingCountLabel
 
 var minutes: int
 var seconds: int
@@ -60,6 +62,7 @@ var cur_attendee_button: Button
 var meeting_attendees: Array
 var email_opened := false
 var icon_opened := false
+var email_count := 0
 
 var calendar_list: Array = [
 	['Jan', 31],
@@ -215,8 +218,8 @@ func _ready() -> void:
 	cur_attendee_button = add_attendee_1
 	attendee_buttons = [add_attendee_1, add_attendee_2, add_attendee_3]
 	
-	example_email_label.text = choose_email()
-	email_queue.append([email_task, example_email_label.text])
+	#example_email_label.text = choose_email()
+	#email_queue.append([email_task, example_email_label.text])
 	
 	for i in company_employee:
 		for j in 3:
@@ -253,8 +256,10 @@ func open_close(nodes: Array, open: bool):
 func send_email():
 	if email_input.text == example_email_label.text:
 		#_on_desktop_clicked()
-		email_queue[0][0].queue_free()
+		#email_queue[0][0].queue_free()
+		icon_opened = false
 		email_queue.pop_front()
+		email_count_label.text = str(email_queue.size())
 		var temp_timer = Timer.new()
 		await get_tree().create_timer(0.01).timeout
 		email_input.text = ''
@@ -340,8 +345,7 @@ func _on_new_email_pressed() -> void:
 	var email_task_scene = preload('res://Scenes/email_task.tscn')
 	var new_email_task = email_task_scene.instantiate()
 	email_queue.append([new_email_task, choose_email()])
-	
-	taskbar.add_child(new_email_task)
+	email_count_label.text = str(email_queue.size())
 
 func _on_start_timer_pressed() -> void:
 	timer.start(timer.wait_time)
@@ -437,13 +441,19 @@ func _on_contact_list_item_activated(index: int) -> void:
 
 func _on_add_to_calendar_pressed() -> void:
 	if month_picker.text == meeting_queue[0][1] and int(day_picker.value) == int(meeting_queue[0][2]) and str(hour_picker.value) == meeting_queue[0][3] and str(minute_picker.value) == meeting_queue[0][4]:
+		var temp_array = []
+		var good_attendees := true
 		for i in meeting_queue[0][0].size():
-			if meeting_queue[0][0][i] == attendee_buttons[i].text:
-				print('good')
-			else:
+			temp_array.append(attendee_buttons[i].text)
+		for i in meeting_queue[0][0].size():
+			if meeting_queue[0][0][i] not in temp_array:
+				good_attendees = false
 				game_over()
-	else:
-		game_over()
+		if good_attendees:
+			meeting_queue.pop_front()
+			meeting_count_label.text = str(meeting_queue.size())
+			if !meeting_queue.size():
+				calendar_panel.visible = false
 
 func _on_continue_call_pressed() -> void:
 	continue_call.visible = false
@@ -456,6 +466,7 @@ func _on_continue_call_pressed() -> void:
 		var opt_zero: String = '0' if minute < 10 else ''
 		minute = opt_zero + str(minute)
 		meeting_queue.append([meeting_attendees, calendar_list[month][0], randi_range(1, calendar_list[month][1]) , str(randi_range(0, 23)),  minute])
+		meeting_count_label.text = str(meeting_queue.size())
 		var all_attendees = ''
 		for i in meeting_attendees:
 			all_attendees += '\n' + i
