@@ -189,6 +189,7 @@ offset_left = 82.0
 offset_right = 292.0
 offset_bottom = 32.0
 theme_override_font_sizes/font_size = 24
+context_menu_enabled = false
 
 [node name="ContactList" type="ItemList" parent="Screen/CalendarPanel"]
 layout_mode = 0
@@ -396,9 +397,9 @@ position = Vector2(67, 113)
 [node name="PhonePanel" type="Panel" parent="."]
 visible = false
 offset_left = 1.0
-offset_top = 39.0
+offset_top = 50.0
 offset_right = 139.0
-offset_bottom = 318.0
+offset_bottom = 350.0
 
 [node name="PhoneVbox" type="VBoxContainer" parent="PhonePanel"]
 layout_mode = 1
@@ -428,7 +429,6 @@ theme_override_font_sizes/font_size = 20
 autowrap_mode = 2
 
 [node name="MeetingVbox" type="VBoxContainer" parent="PhonePanel"]
-visible = false
 layout_mode = 2
 offset_right = 138.0
 offset_bottom = 40.0
@@ -448,32 +448,40 @@ theme_override_font_sizes/font_size = 20
 [node name="ContinueCall" type="Button" parent="PhonePanel"]
 visible = false
 layout_mode = 0
-offset_top = 216.0
-offset_right = 137.0
-offset_bottom = 248.0
+offset_top = 237.0
+offset_right = 138.0
+offset_bottom = 269.0
 theme_override_font_sizes/font_size = 24
 text = "Continue"
 
-[node name="ClosePhone" type="Button" parent="PhonePanel"]
+[node name="HoldPhone" type="Button" parent="PhonePanel"]
 layout_mode = 0
-offset_top = 248.0
-offset_right = 137.0
-offset_bottom = 280.0
+offset_top = 269.0
+offset_right = 138.0
+offset_bottom = 301.0
 theme_override_font_sizes/font_size = 24
 text = "Hold"
 
+[node name="HangUp" type="Button" parent="PhonePanel"]
+visible = false
+layout_mode = 0
+offset_top = 237.0
+offset_right = 138.0
+offset_bottom = 269.0
+theme_override_font_sizes/font_size = 24
+text = "Hang Up"
+
 [node name="NewEmail" type="Button" parent="."]
-offset_left = 1.0
-offset_top = 327.0
-offset_right = 95.0
-offset_bottom = 358.0
+offset_left = 544.0
+offset_top = 31.0
+offset_right = 638.0
+offset_bottom = 62.0
 text = "New Email"
 
 [node name="StartTimer" type="Button" parent="."]
-offset_left = 1.0
-offset_top = 296.0
-offset_right = 96.0
-offset_bottom = 327.0
+offset_left = 544.0
+offset_right = 639.0
+offset_bottom = 31.0
 text = "Start Timer"
 
 [node name="TimerPanel" type="Panel" parent="."]
@@ -545,7 +553,8 @@ text = "Try Again?"
 [connection signal="email_icon_clicked" from="Screen/email_icon" to="." method="_on_email_icon_clicked"]
 [connection signal="calendar_icon_clicked" from="Screen/calendar_icon" to="." method="_on_calendar_icon_clicked"]
 [connection signal="pressed" from="PhonePanel/ContinueCall" to="." method="_on_continue_call_pressed"]
-[connection signal="pressed" from="PhonePanel/ClosePhone" to="." method="_on_close_phone_pressed"]
+[connection signal="pressed" from="PhonePanel/HoldPhone" to="." method="_on_hold_phone_pressed"]
+[connection signal="pressed" from="PhonePanel/HangUp" to="." method="_on_hang_up_pressed"]
 [connection signal="pressed" from="NewEmail" to="." method="_on_new_email_pressed"]
 [connection signal="pressed" from="StartTimer" to="." method="_on_start_timer_pressed"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

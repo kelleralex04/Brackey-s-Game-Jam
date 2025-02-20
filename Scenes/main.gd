@@ -38,6 +38,7 @@ signal typing_finished
 @onready var hour_picker: SpinBox = $Screen/CalendarPanel/HourPicker
 @onready var minute_picker: SpinBox = $Screen/CalendarPanel/MinutePicker
 @onready var meeting_count_label: Label = $TaskbarPanel/MeetingCountLabel
+@onready var hang_up: Button = $PhonePanel/HangUp
 
 var minutes: int
 var seconds: int
@@ -63,6 +64,9 @@ var meeting_attendees: Array
 var email_opened := false
 var icon_opened := false
 var email_count := 0
+var typing := false
+var call_finished := false
+var hang_up_status := false
 
 var calendar_list: Array = [
 	['Jan', 31],
@@ -304,23 +308,29 @@ func _on_desktop_clicked() -> void:
 func _on_phone_clicked() -> void:
 	#if !open_panel or open_panel and phone_opened:
 		#open_panel = !open_panel
-	if phone_opened and get_child(-1) == typewriter_timer:
+	if phone_opened and typing:
 		typewriter_timer.set_paused(true)
-	elif !phone_opened and get_child(-1) == typewriter_timer:
+	elif !phone_opened and typing:
 		typewriter_timer.set_paused(false)
+	elif call_finished or hang_up_status:
+		pass
 	else:
 		phone_call()
 	phone_opened = !phone_opened
 	phone_panel.visible = !phone_panel.visible
+	hang_up_status = false
 
 func phone_call():
+	typing = true
 	call_typewriter(phone_caller_label, 'Caller:\n' + cur_caller)
 	await typing_finished
 	call_typewriter(phone_company_label, 'Company:\n' + cur_company)
 	await typing_finished
 	call_typewriter(phone_reason_label, 'Reason:\n' + cur_reason)
 	await typing_finished
+	call_finished = true
 	continue_call.visible = true
+	typing = false
 
 func call_typewriter(label: Label ,text: String):
 	typewriter_timer = Timer.new()
@@ -363,7 +373,7 @@ func _on_close_screen_pressed() -> void:
 	desktop_opened = false
 	screen.visible = false
 
-func _on_close_phone_pressed() -> void:
+func _on_hold_phone_pressed() -> void:
 	_on_phone_clicked()
 
 func _on_email_icon_clicked() -> void:
@@ -392,11 +402,11 @@ func _on_send_pressed() -> void:
 
 func _on_calendar_icon_clicked() -> void:
 	if !icon_opened:
-		if meeting_queue.size():
+		#if meeting_queue.size():
 			icon_opened = true
 			calendar_panel.visible = true
-		else:
-			print('no meetings')
+		#else:
+			#print('no meetings')
 
 func populate_list(names):
 	contact_list.clear()
@@ -448,20 +458,26 @@ func _on_contact_list_item_activated(index: int) -> void:
 	#open_close([contact_list, contact_search, search_label], false)
 
 func _on_add_to_calendar_pressed() -> void:
-	if month_picker.text == meeting_queue[0][1] and int(day_picker.value) == int(meeting_queue[0][2]) and str(hour_picker.value) == meeting_queue[0][3] and str(minute_picker.value) == meeting_queue[0][4]:
-		var temp_array = []
-		var good_attendees := true
-		for i in meeting_queue[0][0].size():
-			temp_array.append(attendee_buttons[i].text)
-		for i in meeting_queue[0][0].size():
-			if meeting_queue[0][0][i] not in temp_array:
-				good_attendees = false
-				game_over()
-		if good_attendees:
-			meeting_queue.pop_front()
-			meeting_count_label.text = str(meeting_queue.size())
-			if !meeting_queue.size():
-				calendar_panel.visible = false
+	print(meeting_queue)
+	var minute = minute_picker.value
+	var cur_attendees := []
+	var opt_zero: String = '0' if minute < 10 else ''
+	minute = opt_zero + str(minute)
+	for i in attendee_buttons:
+		if i.text != 'Add':
+			cur_attendees.append(i.text)
+	
+	var cur_meeting = [cur_attendees, month_picker.text, str(day_picker.value), str(hour_picker.value), str(minute)]
+	var normalized_meeting_queue = meeting_queue.map(func(item): return item.map(func(sub): return str(sub)))
+	var normalized_cur_meeting = cur_meeting.map(func(sub): return str(sub))
+	
+	if normalized_cur_meeting in normalized_meeting_queue:
+		meeting_queue.pop_front()
+		meeting_count_label.text = str(meeting_queue.size())
+		if !meeting_queue.size():
+			calendar_panel.visible = false
+	else:
+		game_over()
 
 func reset_calendar():
 	for i in attendee_buttons:
@@ -473,6 +489,7 @@ func reset_calendar():
 	open_close([add_attendee_2, add_attendee_3], false)
 
 func _on_continue_call_pressed() -> void:
+	call_finished = false
 	continue_call.visible = false
 	if cur_reason == 'Schedule Meeting':
 		meeting_attendees = []
@@ -489,11 +506,15 @@ func _on_continue_call_pressed() -> void:
 			all_attendees += '\n' + i
 		phone_vbox.visible = false
 		meeting_vbox.visible = true
+		typing = true
 		call_typewriter(meeting_attendees_label, 'Attendees: ' + all_attendees)
 		await typing_finished
 		call_typewriter(meeting_date_label, 'Date:\n' + meeting_queue[0][1] + ' ' + str(meeting_queue[0][2]) + '\n')
 		await typing_finished
-		call_typewriter(meeting_date_label, 'Time:\n' + meeting_queue[0][3] + ':' + meeting_queue[0][4])
+		call_typewriter(meeting_time_label, 'Time:\n' + meeting_queue[0][3] + ':' + meeting_queue[0][4])
+		call_finished = true
+		typing = false
+		hang_up.visible = true
 
 func format_time(value: int, node: SpinBox):
 	var opt_zero: String = '0' if value < 10 else ''
@@ -517,3 +538,16 @@ func _on_close_calendar_pressed() -> void:
 
 func _on_reset_calendar_pressed() -> void:
 	reset_calendar()
+
+func reset_text(labels: Array[Label]):
+	for label in labels:
+		label.text = ''
+
+func _on_hang_up_pressed() -> void:
+	reset_text([phone_caller_label, phone_company_label, phone_reason_label, meeting_attendees_label, meeting_date_label, meeting_time_label])
+	phone_vbox.visible = true
+	meeting_vbox.visible = false
+	call_finished = false
+	hang_up.visible = false
+	hang_up_status = true
+	_on_phone_clicked()
