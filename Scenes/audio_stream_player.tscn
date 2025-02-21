@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://chqv8cchjgq18"]
+
+[ext_resource type="AudioStream" uid="uid://c4six5516dvrm" path="res://Assets/Audio/office-ambience-24734.mp3" id="1_m30t8"]
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer"]
+stream = ExtResource("1_m30t8")
+autoplay = true

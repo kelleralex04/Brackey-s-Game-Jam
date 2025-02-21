@@ -1,6 +1,8 @@
 extends Node2D
 
 signal typing_finished
+signal boss_speech_finished
+signal player_speech_finished
 
 @onready var desktop: Node2D = $Desktop
 @onready var example_email_label: Label = $Screen/ExampleEmailPanel/ExampleEmailLabel
@@ -39,6 +41,18 @@ signal typing_finished
 @onready var minute_picker: SpinBox = $Screen/CalendarPanel/MinutePicker
 @onready var meeting_count_label: Label = $TaskbarPanel/MeetingCountLabel
 @onready var hang_up: Button = $PhonePanel/HangUp
+@onready var no_meetings_panel: Panel = $Screen/NoMeetingsPanel
+@onready var text_scroll: AudioStreamPlayer = $TextScroll
+@onready var blocker: ColorRect = $Blocker
+@onready var day_label: Label = $DayLabel
+@onready var boss_audio: AudioStreamPlayer = $BossSpeech/BossAudio
+@onready var boss_speech_label: Label = $BossSpeech/BossSpeechLabel
+@onready var boss_speech: TextureRect = $BossSpeech
+@onready var boss_speech_tick: Label = $BossSpeech/BossSpeechTick
+@onready var player_speech_label: Label = $PlayerSpeech/PlayerSpeechLabel
+@onready var player_audio: AudioStreamPlayer = $PlayerSpeech/PlayerAudio
+@onready var player_speech_tick: Label = $PlayerSpeech/PlayerSpeechTick
+@onready var player_speech: TextureRect = $PlayerSpeech
 
 var minutes: int
 var seconds: int
@@ -67,6 +81,9 @@ var email_count := 0
 var typing := false
 var call_finished := false
 var hang_up_status := false
+var advance_dialogue := false
+var skip_typewriter := false
+var typewriter_finished := false
 
 var calendar_list: Array = [
 	['Jan', 31],
@@ -203,10 +220,19 @@ var reasons = [
 ]
 var all_names = []
 var attendee_buttons: Array
+var dialogue_text := [
+	['I guess I\'m just a bit confused... What is it we do here exactly?', 0],
+	['test', 1],
+	['test2', 1],
+	['test3', 0],
+]
+var dialogue_tracker := 0
+@onready var speakers = [player_speech_label, boss_speech_label]
 
 #Other tasks: order lunch, hand out lunch
 
 func _ready() -> void:
+	open_close([blocker, day_label], true)
 	var line_edit = hour_picker.get_line_edit()
 	line_edit.context_menu_enabled = false
 	line_edit = minute_picker.get_line_edit()
@@ -214,8 +240,7 @@ func _ready() -> void:
 	line_edit = day_picker.get_line_edit()
 	line_edit.context_menu_enabled = false
 	
-	typing_speed = randf_range(0.05, 0.15)
-	#typing_speed = 0.01
+	typing_speed = 0.025
 	format_time(minute_picker.value, minute_picker)
 	format_time(hour_picker.value, hour_picker)
 	
@@ -232,6 +257,17 @@ func _ready() -> void:
 	all_names.sort()
 	
 	populate_list(all_names)
+	
+	var tween1 = get_tree().create_tween()
+	tween1.tween_property(day_label, "modulate:a", 0, 3)
+	await get_tree().create_timer(2.0).timeout
+	var tween2 = get_tree().create_tween()
+	tween2.tween_property(blocker, "modulate:a", 0, 3)
+	await get_tree().create_timer(2.0).timeout
+	day_label.visible = false
+	
+	boss_speech.visible = true
+	boss_speak('Hey there, I had heard we had a new hire! Hope you\'re enjoying your first day at DigiTech Innovative Solutions Incorporated.')
 
 func _process(delta: float) -> void:
 	var remaining_time = timer.time_left
@@ -246,10 +282,52 @@ func _input(event: InputEvent) -> void:
 	
 	if Input.is_action_just_pressed('ui_accept') and email_opened:
 		send_email()
+	
+	if Input.is_action_just_pressed('ui_select'):
+		if typewriter_finished == false:
+			skip_typewriter = true
+		else:
+			skip_typewriter = false
+			next_dialogue(dialogue_tracker)
 
 func open_close(nodes: Array, open: bool):
 	for i in nodes:
 		i.visible = open
+
+func boss_speak(text: String):
+	boss_audio.play()
+	call_typewriter(boss_speech_label, text)
+	await typing_finished
+	boss_audio.stop()
+	boss_speech_finished.emit()
+	
+func player_speak(text: String):
+	player_audio.play()
+	call_typewriter(player_speech_label, text)
+	await typing_finished
+	player_audio.stop()
+	player_speech_finished.emit()
+
+func _on_player_speech_finished() -> void:
+	player_speech_tick.visible = true
+	#advance_dialogue = true
+
+func _on_boss_speech_finished() -> void:
+	boss_speech_tick.visible = true
+	#advance_dialogue = true
+
+func next_dialogue(index: int):
+	var speaker = speakers[dialogue_text[index][1]]
+	speaker.text = ''
+	if speaker == player_speech_label:
+		open_close([boss_speech, boss_speech_tick], false)
+		player_speech.visible = true
+		player_speak(dialogue_text[index][0])
+	else:
+		open_close([player_speech, player_speech_tick], false)
+		boss_speech.visible = true
+		boss_speak(dialogue_text[index][0])
+	dialogue_tracker += 1
 
 func send_email():
 	if email_input.text == example_email_label.text:
@@ -317,12 +395,14 @@ func _on_phone_clicked() -> void:
 func phone_call():
 	typing = true
 	new_call()
+	text_scroll.play()
 	call_typewriter(phone_caller_label, 'Caller:\n' + cur_caller)
 	await typing_finished
 	call_typewriter(phone_company_label, 'Company:\n' + cur_company)
 	await typing_finished
 	call_typewriter(phone_reason_label, 'Reason:\n' + cur_reason)
 	await typing_finished
+	text_scroll.stop()
 	call_finished = true
 	continue_call.visible = true
 	typing = false
@@ -335,6 +415,7 @@ func new_call():
 	cur_reason = reasons[0]
 
 func call_typewriter(label: Label ,text: String):
+	typewriter_finished = false
 	typewriter_timer = Timer.new()
 	full_text = text
 	cur_label = label
@@ -345,12 +426,21 @@ func call_typewriter(label: Label ,text: String):
 	add_child(typewriter_timer)
 
 func _on_typewriter_timer_timeout():
+	if skip_typewriter:
+		cur_label.text = full_text
+		typewriter_finished = true
+		typewriter_index = 0
+		typewriter_timer.queue_free()
+		typing_finished.emit()
+		return
+
 	if typewriter_index < full_text.length():
 		cur_label.text += full_text[typewriter_index]
 		typewriter_index += 1
 	else:
+		typewriter_finished = true
 		typewriter_index = 0
-		get_child(-1).queue_free()
+		typewriter_timer.queue_free()
 		typing_finished.emit()
 
 func _on_new_email_pressed() -> void:
@@ -380,19 +470,25 @@ func _on_hold_phone_pressed() -> void:
 
 func _on_email_icon_clicked() -> void:
 	if !icon_opened:
-		if email_queue.size():
-			example_email_label.text = email_queue[0][1]
-			email_input.grab_focus()
-			email_opened = true
-			icon_opened = true
-			open_close([email_input, example_email, close_email, send], true)
-			
-		else:
-			no_emails_panel.modulate.a = 1
-			no_emails_panel.visible = true
-			await get_tree().create_timer(1).timeout
-			var tween = get_tree().create_tween()
-			tween.tween_property(no_emails_panel, "modulate:a", 0, 1)
+		open_email()
+	else:
+		calendar_panel.visible = false
+		open_email()
+
+func open_email():
+	if email_queue.size():
+		example_email_label.text = email_queue[0][1]
+		email_input.grab_focus()
+		email_opened = true
+		icon_opened = true
+		open_close([email_input, example_email, close_email, send], true)
+	else:
+		icon_opened = false
+		no_emails_panel.modulate.a = 1
+		no_emails_panel.visible = true
+		await get_tree().create_timer(1).timeout
+		var tween = get_tree().create_tween()
+		tween.tween_property(no_emails_panel, "modulate:a", 0, 1)
 
 func _on_close_email_pressed() -> void:
 	email_opened = false
@@ -404,11 +500,22 @@ func _on_send_pressed() -> void:
 
 func _on_calendar_icon_clicked() -> void:
 	if !icon_opened:
-		#if meeting_queue.size():
+		open_calendar()
+	else:
+		open_close([email_input, example_email, close_email, send], false)
+		open_calendar()
+
+func open_calendar():
+		if meeting_queue.size():
 			icon_opened = true
 			calendar_panel.visible = true
-		#else:
-			#print('no meetings')
+		else:
+			icon_opened = false
+			no_meetings_panel.modulate.a = 1
+			no_meetings_panel.visible = true
+			await get_tree().create_timer(1).timeout
+			var tween = get_tree().create_tween()
+			tween.tween_property(no_meetings_panel, "modulate:a", 0, 1)
 
 func populate_list(names):
 	contact_list.clear()
@@ -491,6 +598,7 @@ func reset_calendar():
 	open_close([add_attendee_2, add_attendee_3], false)
 
 func _on_continue_call_pressed() -> void:
+	text_scroll.play()
 	call_finished = false
 	continue_call.visible = false
 	if cur_reason == 'Schedule Meeting':
@@ -514,6 +622,7 @@ func _on_continue_call_pressed() -> void:
 		call_typewriter(meeting_date_label, 'Date:\n' + meeting_queue[0][1] + ' ' + str(meeting_queue[0][2]) + '\n')
 		await typing_finished
 		call_typewriter(meeting_time_label, 'Time:\n' + meeting_queue[0][3] + ':' + meeting_queue[0][4])
+		text_scroll.stop()
 		call_finished = true
 		typing = false
 		hang_up.visible = true

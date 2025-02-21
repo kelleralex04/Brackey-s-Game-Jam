@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://578yfpfkbim6"]
+[gd_scene load_steps=25 format=3 uid="uid://578yfpfkbim6"]
 
 [ext_resource type="Script" path="res://Scenes/main.gd" id="1_7vj2b"]
 [ext_resource type="PackedScene" uid="uid://dlcv1qrrvtfet" path="res://Scenes/desktop.tscn" id="1_dntc4"]
@@ -16,6 +16,11 @@
 [ext_resource type="Theme" uid="uid://c2k6l5fb6vkqi" path="res://Assets/StyleBoxes/spin_box.tres" id="12_6qvw5"]
 [ext_resource type="StyleBox" uid="uid://d0kup8retrj74" path="res://Assets/StyleBoxes/button_style_box.tres" id="14_7raio"]
 [ext_resource type="PackedScene" uid="uid://b5v47ij16ld7g" path="res://Scenes/calendar_icon.tscn" id="14_o0kic"]
+[ext_resource type="AudioStream" uid="uid://ccimot25luwst" path="res://Assets/Audio/text-scroll.mp3" id="17_acx0i"]
+[ext_resource type="AudioStream" uid="uid://du547ia5a2wma" path="res://Assets/Audio/Cartoon Phone Talking Sound Effect.mp3" id="17_i0lf5"]
+[ext_resource type="Texture2D" uid="uid://csmybk1xmwwf0" path="res://Assets/Sprites/boss.png" id="18_nawhe"]
+[ext_resource type="Texture2D" uid="uid://d4jnusny4frxf" path="res://Assets/Sprites/player_speech_bubble.png" id="19_q77dj"]
+[ext_resource type="Texture2D" uid="uid://4t0vp3mi0hma" path="res://Assets/Sprites/boss_speech_bubble.png" id="19_suhre"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wtqrs"]
 content_margin_left = 6.0
@@ -39,6 +44,13 @@ offset_right = 640.0
 offset_bottom = 360.0
 texture = ExtResource("2_mnrvu")
 
+[node name="Boss" type="TextureRect" parent="."]
+offset_left = 285.0
+offset_top = 143.0
+offset_right = 385.0
+offset_bottom = 293.0
+texture = ExtResource("18_nawhe")
+
 [node name="Desktop" parent="." instance=ExtResource("1_dntc4")]
 position = Vector2(129, 158)
 
@@ -61,7 +73,7 @@ texture = ExtResource("7_8wov8")
 
 [node name="TaskbarPanel" type="Panel" parent="."]
 offset_left = 73.0
-offset_right = 634.0
+offset_right = 281.0
 offset_bottom = 46.0
 
 [node name="MeetingTask" type="Control" parent="TaskbarPanel"]
@@ -164,6 +176,26 @@ grow_vertical = 2
 theme_override_fonts/font = ExtResource("10_0t7c4")
 theme_override_font_sizes/font_size = 24
 text = "No Emails Remaining"
+horizontal_alignment = 1
+
+[node name="NoMeetingsPanel" type="Panel" parent="Screen"]
+visible = false
+layout_mode = 0
+offset_left = 144.0
+offset_top = 123.0
+offset_right = 378.0
+offset_bottom = 148.0
+
+[node name="NoMeetingsLabel" type="Label" parent="Screen/NoMeetingsPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("10_0t7c4")
+theme_override_font_sizes/font_size = 24
+text = "No Meetings to Schedule"
 horizontal_alignment = 1
 
 [node name="CalendarPanel" type="Panel" parent="Screen"]
@@ -531,6 +563,93 @@ offset_right = 364.0
 offset_bottom = 240.0
 text = "Try Again?"
 
+[node name="TextScroll" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("17_i0lf5")
+volume_db = -7.495
+pitch_scale = 0.71
+
+[node name="PlayerSpeech" type="TextureRect" parent="."]
+visible = false
+offset_left = 107.0
+offset_top = 49.0
+offset_right = 307.0
+offset_bottom = 169.0
+texture = ExtResource("19_q77dj")
+
+[node name="PlayerAudio" type="AudioStreamPlayer" parent="PlayerSpeech"]
+stream = ExtResource("17_acx0i")
+
+[node name="PlayerSpeechLabel" type="Label" parent="PlayerSpeech"]
+layout_mode = 0
+offset_left = 21.0
+offset_top = 5.0
+offset_right = 191.0
+offset_bottom = 98.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 16
+autowrap_mode = 2
+
+[node name="PlayerSpeechTick" type="Label" parent="PlayerSpeech"]
+visible = false
+layout_mode = 0
+offset_left = 182.0
+offset_top = 78.0
+offset_right = 190.0
+offset_bottom = 102.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 24
+text = "<"
+
+[node name="BossSpeech" type="TextureRect" parent="."]
+visible = false
+offset_left = 101.0
+offset_top = 49.0
+offset_right = 301.0
+offset_bottom = 169.0
+texture = ExtResource("19_suhre")
+
+[node name="BossAudio" type="AudioStreamPlayer" parent="BossSpeech"]
+stream = ExtResource("17_acx0i")
+
+[node name="BossSpeechLabel" type="Label" parent="BossSpeech"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 6.0
+offset_right = 178.0
+offset_bottom = 92.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 16
+autowrap_mode = 2
+
+[node name="BossSpeechTick" type="Label" parent="BossSpeech"]
+visible = false
+layout_mode = 0
+offset_left = 166.0
+offset_top = 77.0
+offset_right = 175.0
+offset_bottom = 101.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 24
+text = "<"
+autowrap_mode = 2
+
+[node name="Blocker" type="ColorRect" parent="."]
+visible = false
+offset_right = 640.0
+offset_bottom = 360.0
+color = Color(0, 0, 0, 1)
+
+[node name="DayLabel" type="Label" parent="."]
+visible = false
+offset_left = 258.0
+offset_top = 142.0
+offset_right = 298.0
+offset_bottom = 158.0
+theme_override_font_sizes/font_size = 64
+text = "Day 1"
+
+[connection signal="boss_speech_finished" from="." to="." method="_on_boss_speech_finished"]
+[connection signal="player_speech_finished" from="." to="." method="_on_player_speech_finished"]
 [connection signal="desktop_clicked" from="Desktop" to="." method="_on_desktop_clicked"]
 [connection signal="phone_clicked" from="Phone" to="." method="_on_phone_clicked"]
 [connection signal="text_changed" from="Screen/EmailInput" to="." method="_on_email_input_text_changed"]
@@ -559,3 +678,4 @@ text = "Try Again?"
 [connection signal="pressed" from="StartTimer" to="." method="_on_start_timer_pressed"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="pressed" from="GameOverPanel/Restart" to="." method="_on_restart_pressed"]
+[connection signal="gui_input" from="Blocker" to="." method="_on_blocker_gui_input"]

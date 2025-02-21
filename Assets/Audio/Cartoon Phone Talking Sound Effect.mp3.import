@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://du547ia5a2wma"
+path="res://.godot/imported/Cartoon Phone Talking Sound Effect.mp3-ebd0a44e3b2787c9f3e566eb0b0c8e83.mp3str"
+
+[deps]
+
+source_file="res://Assets/Audio/Cartoon Phone Talking Sound Effect.mp3"
+dest_files=["res://.godot/imported/Cartoon Phone Talking Sound Effect.mp3-ebd0a44e3b2787c9f3e566eb0b0c8e83.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
