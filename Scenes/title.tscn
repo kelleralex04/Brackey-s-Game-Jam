@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://bgfw6fxx543jm"]
+[gd_scene load_steps=5 format=3 uid="uid://bgfw6fxx543jm"]
 
 [ext_resource type="Script" path="res://Scenes/title.gd" id="1_mvoer"]
 [ext_resource type="Texture2D" uid="uid://cnjeimdweul2" path="res://Assets/Sprites/Marian/background.png" id="2_1hcmr"]
 [ext_resource type="StyleBox" uid="uid://c2nao3s6kqmyk" path="res://Assets/StyleBoxes/title_buttons.tres" id="2_ky8oh"]
+[ext_resource type="Texture2D" uid="uid://dv48n7y1nie0i" path="res://Assets/Sprites/Marian/computer.png" id="4_05cud"]
 
 [node name="Title" type="Node2D"]
 script = ExtResource("1_mvoer")
@@ -40,5 +41,13 @@ theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 8
 theme_override_font_sizes/font_size = 64
 text = "Working Overtime"
+
+[node name="TextureRect" type="TextureRect" parent="."]
+offset_left = 142.0
+offset_top = 224.0
+offset_right = 257.0
+offset_bottom = 304.0
+texture = ExtResource("4_05cud")
+flip_h = true
 
 [connection signal="pressed" from="StartGame" to="." method="_on_start_game_pressed"]

@@ -68,7 +68,7 @@ texture = ExtResource("4_7jg1b")
 flip_h = true
 
 [node name="Desktop" parent="." instance=ExtResource("1_dntc4")]
-position = Vector2(157, 225)
+position = Vector2(142, 224)
 
 [node name="Phone" parent="." instance=ExtResource("5_skwty")]
 position = Vector2(97, 261)
