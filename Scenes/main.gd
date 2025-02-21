@@ -221,10 +221,21 @@ var reasons = [
 var all_names = []
 var attendee_buttons: Array
 var dialogue_text := [
+	['Ah, Mr. Hawthorne! It\'s so nice to meet you, my names...', 0],
+	['Yeah that\'s great kid. You got any questions before you get started?', 1],
 	['I guess I\'m just a bit confused... What is it we do here exactly?', 0],
-	['test', 1],
-	['test2', 1],
-	['test3', 0],
+	['We\'re a consulting company that helps other consulting companies find innovative technical solutions to real world', 1],
+	['problems in the Web3 and Web4 spaces while providing SAAS and synergy across all areas of modern day business.', 1],
+	['...', 0],
+	['... What?', 0],
+	['Look, don\'t concern yourself on what we do, just focus on what you do.', 1],
+	['Which is?', 0],
+	['Well today you\'re going to start off by responding to emails for me.', 1],
+	['I\'ve already dictated them and had our in-house AI make them a bit less... colorful.', 1],
+	['All you need to do is copy the responses and send them out to the right people, think you can handle that?', 1],
+	['Wait, but if the AI already has the response ready, why do I need to type it up and send it?', 0],
+	['Look kid, do you want the job or not?', 1],
+	['Oh uh yes sir, I\'ll get right on it.', 0],
 	'break'
 ]
 var dialogue_tracker := 0
