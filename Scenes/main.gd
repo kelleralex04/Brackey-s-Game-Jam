@@ -214,8 +214,8 @@ func _ready() -> void:
 	line_edit = day_picker.get_line_edit()
 	line_edit.context_menu_enabled = false
 	
-	#typing_speed = randf_range(0.05, 0.15)
-	typing_speed = 0.01
+	typing_speed = randf_range(0.05, 0.15)
+	#typing_speed = 0.01
 	format_time(minute_picker.value, minute_picker)
 	format_time(hour_picker.value, hour_picker)
 	
@@ -255,7 +255,6 @@ func send_email():
 	if email_input.text == example_email_label.text:
 		#_on_desktop_clicked()
 		#email_queue[0][0].queue_free()
-		icon_opened = false
 		email_queue.pop_front()
 		email_count_label.text = str(email_queue.size())
 		var temp_timer = Timer.new()
@@ -265,6 +264,7 @@ func send_email():
 			example_email_label.text = email_queue[0][1]
 			email_input.grab_focus()
 		else:
+			icon_opened = false
 			timer.set_paused(true)
 			open_close([email_input, example_email, close_email, send], false)
 	else:
@@ -477,7 +477,7 @@ func _on_add_to_calendar_pressed() -> void:
 		meeting_count_label.text = str(meeting_queue.size())
 		if !meeting_queue.size():
 			calendar_panel.visible = false
-		print(meeting_queue)
+			icon_opened = false
 	else:
 		game_over()
 
@@ -553,4 +553,3 @@ func _on_hang_up_pressed() -> void:
 	hang_up.visible = false
 	hang_up_status = true
 	_on_phone_clicked()
-	print(meeting_queue)
