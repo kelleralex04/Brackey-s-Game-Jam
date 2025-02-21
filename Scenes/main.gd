@@ -231,12 +231,6 @@ func _ready() -> void:
 	
 	all_names.sort()
 	
-	rand = randi_range(0, 49)
-	cur_company = company_employee[rand][0]
-	cur_caller = company_employee[rand][randi_range(1, 3)]
-	#cur_reason = reasons[randi_range(0, 2)]
-	cur_reason = reasons[0]
-	
 	populate_list(all_names)
 
 func _process(delta: float) -> void:
@@ -322,6 +316,7 @@ func _on_phone_clicked() -> void:
 
 func phone_call():
 	typing = true
+	new_call()
 	call_typewriter(phone_caller_label, 'Caller:\n' + cur_caller)
 	await typing_finished
 	call_typewriter(phone_company_label, 'Company:\n' + cur_company)
@@ -331,6 +326,13 @@ func phone_call():
 	call_finished = true
 	continue_call.visible = true
 	typing = false
+
+func new_call():
+	rand = randi_range(0, 49)
+	cur_company = company_employee[rand][0]
+	cur_caller = company_employee[rand][randi_range(1, 3)]
+	#cur_reason = reasons[randi_range(0, 2)]
+	cur_reason = reasons[0]
 
 func call_typewriter(label: Label ,text: String):
 	typewriter_timer = Timer.new()
@@ -458,7 +460,6 @@ func _on_contact_list_item_activated(index: int) -> void:
 	#open_close([contact_list, contact_search, search_label], false)
 
 func _on_add_to_calendar_pressed() -> void:
-	print(meeting_queue)
 	var minute = minute_picker.value
 	var cur_attendees := []
 	var opt_zero: String = '0' if minute < 10 else ''
@@ -472,10 +473,11 @@ func _on_add_to_calendar_pressed() -> void:
 	var normalized_cur_meeting = cur_meeting.map(func(sub): return str(sub))
 	
 	if normalized_cur_meeting in normalized_meeting_queue:
-		meeting_queue.pop_front()
+		meeting_queue.remove_at(normalized_meeting_queue.find(normalized_cur_meeting))
 		meeting_count_label.text = str(meeting_queue.size())
 		if !meeting_queue.size():
 			calendar_panel.visible = false
+		print(meeting_queue)
 	else:
 		game_over()
 
@@ -551,3 +553,4 @@ func _on_hang_up_pressed() -> void:
 	hang_up.visible = false
 	hang_up_status = true
 	_on_phone_clicked()
+	print(meeting_queue)
