@@ -1,10 +1,10 @@
 [gd_scene load_steps=4 format=3 uid="uid://dlcv1qrrvtfet"]
 
 [ext_resource type="Script" path="res://Scenes/desktop.gd" id="1_hkm58"]
-[ext_resource type="Texture2D" uid="uid://d2w0c4md3qrpv" path="res://Assets/Sprites/desktop_back.png" id="2_i27xk"]
+[ext_resource type="Texture2D" uid="uid://dv48n7y1nie0i" path="res://Assets/Sprites/Marian/computer.png" id="2_nkbdw"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bvjy8"]
-size = Vector2(64, 64)
+size = Vector2(46, 41)
 
 [node name="Desktop" type="Node2D"]
 script = ExtResource("1_hkm58")
@@ -12,13 +12,14 @@ script = ExtResource("1_hkm58")
 [node name="TextureRect" type="TextureRect" parent="."]
 offset_right = 40.0
 offset_bottom = 40.0
-texture = ExtResource("2_i27xk")
+texture = ExtResource("2_nkbdw")
+flip_h = true
 
 [node name="Area2D" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 visible = false
-position = Vector2(32, 32)
+position = Vector2(87, 23)
 shape = SubResource("RectangleShape2D_bvjy8")
 
 [connection signal="input_event" from="Area2D" to="." method="_on_area_2d_input_event"]

@@ -53,6 +53,9 @@ signal player_speech_finished
 @onready var player_audio: AudioStreamPlayer = $PlayerSpeech/PlayerAudio
 @onready var player_speech_tick: Label = $PlayerSpeech/PlayerSpeechTick
 @onready var player_speech: TextureRect = $PlayerSpeech
+@onready var john_office: TextureRect = $JohnOffice
+@onready var boss: TextureRect = $Boss
+@onready var boss_2: TextureRect = $Boss2
 
 var minutes: int
 var seconds: int
@@ -221,7 +224,7 @@ var reasons = [
 var all_names = []
 var attendee_buttons: Array
 var dialogue_text := [
-	['Ah, Mr. Hawthorne! It\'s so nice to meet you, my names...', 0],
+	['Ah, Mr. Hawthorne! It\'s so nice to meet you, my name\'s...', 0],
 	['Yeah that\'s great kid. You got any questions before you get started?', 1],
 	['I guess I\'m just a bit confused... What is it we do here exactly?', 0],
 	['We\'re a consulting company that helps other consulting companies find innovative technical solutions to real world', 1],
@@ -296,10 +299,13 @@ func _input(event: InputEvent) -> void:
 		send_email()
 	
 	if Input.is_action_just_pressed('ui_select') and blocker.visible:
-		if typewriter_finished == false:
+		if typewriter_finished == false and blocker.visible:
 			skip_typewriter = true
 		else:
 			if typeof(dialogue_text[dialogue_tracker]) != 28:
+				#john_office.flip_h = false
+				boss.visible = false
+				boss_2.visible = true
 				blocker.visible = false
 				open_close([boss_speech, boss_speech_tick, player_speech, player_speech_tick], false)
 			else:
@@ -394,6 +400,7 @@ func _on_desktop_clicked() -> void:
 	screen.visible = true
 
 func _on_phone_clicked() -> void:
+	skip_typewriter = false
 	#if !open_panel or open_panel and phone_opened:
 		#open_panel = !open_panel
 	if phone_opened and typing:

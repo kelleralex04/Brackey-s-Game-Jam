@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://bgfw6fxx543jm"]
 
 [ext_resource type="Script" path="res://Scenes/title.gd" id="1_mvoer"]
-[ext_resource type="Texture2D" uid="uid://cwje6gr5tj4nj" path="res://Assets/Sprites/background.png" id="1_oqrui"]
+[ext_resource type="Texture2D" uid="uid://cnjeimdweul2" path="res://Assets/Sprites/Marian/background.png" id="2_1hcmr"]
 [ext_resource type="StyleBox" uid="uid://c2nao3s6kqmyk" path="res://Assets/StyleBoxes/title_buttons.tres" id="2_ky8oh"]
 
 [node name="Title" type="Node2D"]
@@ -10,13 +10,13 @@ script = ExtResource("1_mvoer")
 [node name="Background" type="TextureRect" parent="."]
 offset_right = 640.0
 offset_bottom = 360.0
-texture = ExtResource("1_oqrui")
+texture = ExtResource("2_1hcmr")
 
 [node name="StartGame" type="Button" parent="."]
 offset_left = 239.0
-offset_top = 142.0
+offset_top = 175.0
 offset_right = 387.0
-offset_bottom = 174.0
+offset_bottom = 207.0
 theme_override_font_sizes/font_size = 24
 theme_override_styles/focus = ExtResource("2_ky8oh")
 theme_override_styles/disabled_mirrored = ExtResource("2_ky8oh")
@@ -32,10 +32,10 @@ theme_override_styles/normal = ExtResource("2_ky8oh")
 text = "Start Game"
 
 [node name="Label" type="Label" parent="."]
-offset_left = 109.0
-offset_top = 18.0
-offset_right = 533.0
-offset_bottom = 82.0
+offset_left = 110.0
+offset_top = 48.0
+offset_right = 534.0
+offset_bottom = 112.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 8
 theme_override_font_sizes/font_size = 64
