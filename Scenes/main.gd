@@ -225,6 +225,7 @@ var dialogue_text := [
 	['test', 1],
 	['test2', 1],
 	['test3', 0],
+	'break'
 ]
 var dialogue_tracker := 0
 @onready var speakers = [player_speech_label, boss_speech_label]
@@ -283,12 +284,16 @@ func _input(event: InputEvent) -> void:
 	if Input.is_action_just_pressed('ui_accept') and email_opened:
 		send_email()
 	
-	if Input.is_action_just_pressed('ui_select'):
+	if Input.is_action_just_pressed('ui_select') and blocker.visible:
 		if typewriter_finished == false:
 			skip_typewriter = true
 		else:
-			skip_typewriter = false
-			next_dialogue(dialogue_tracker)
+			if typeof(dialogue_text[dialogue_tracker]) != 28:
+				blocker.visible = false
+				open_close([boss_speech, boss_speech_tick, player_speech, player_speech_tick], false)
+			else:
+				skip_typewriter = false
+				next_dialogue(dialogue_tracker)
 
 func open_close(nodes: Array, open: bool):
 	for i in nodes:

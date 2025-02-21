@@ -610,6 +610,7 @@ texture = ExtResource("19_suhre")
 
 [node name="BossAudio" type="AudioStreamPlayer" parent="BossSpeech"]
 stream = ExtResource("17_acx0i")
+pitch_scale = 0.75
 
 [node name="BossSpeechLabel" type="Label" parent="BossSpeech"]
 layout_mode = 0
