@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://578yfpfkbim6"]
+[gd_scene load_steps=30 format=3 uid="uid://578yfpfkbim6"]
 
 [ext_resource type="Script" path="res://Scenes/main.gd" id="1_7vj2b"]
 [ext_resource type="PackedScene" uid="uid://dlcv1qrrvtfet" path="res://Scenes/desktop.tscn" id="1_dntc4"]
@@ -7,8 +7,12 @@
 [ext_resource type="PackedScene" uid="uid://chc7rkv04g0iu" path="res://Scenes/email_input.tscn" id="3_im7m8"]
 [ext_resource type="Texture2D" uid="uid://bfqknvkftb007" path="res://Assets/Sprites/Marian/employee1.png" id="4_7jg1b"]
 [ext_resource type="PackedScene" uid="uid://bx4jtaudukp2x" path="res://Scenes/email_task.tscn" id="4_g8ask"]
+[ext_resource type="Texture2D" uid="uid://ba0b4gp4n0wn8" path="res://Assets/Sprites/Marian/boss3.png" id="4_gnrcg"]
 [ext_resource type="PackedScene" uid="uid://c5713bjf7ax0x" path="res://Scenes/phone.tscn" id="5_skwty"]
+[ext_resource type="Texture2D" uid="uid://b4k0ur7eqpfrc" path="res://Assets/Sprites/Marian/top_of_desk.png" id="6_i5xd8"]
+[ext_resource type="Texture2D" uid="uid://d282oa1h7sct8" path="res://Assets/Sprites/cursor_finger.png" id="7_5cp4l"]
 [ext_resource type="Texture2D" uid="uid://dr7ihbh7uiu1g" path="res://Assets/Sprites/calendar_task_icon.png" id="7_frmic"]
+[ext_resource type="Texture2D" uid="uid://bqym6wnd8u8og" path="res://Assets/Sprites/cursor_finger_no_click.png" id="7_qr53j"]
 [ext_resource type="Texture2D" uid="uid://dge34nelojwkh" path="res://Assets/Sprites/screen.png" id="8_3seal"]
 [ext_resource type="FontFile" uid="uid://djd4rrfcad36n" path="res://Assets/Fonts/MedodicaRegular.otf" id="10_0t7c4"]
 [ext_resource type="PackedScene" uid="uid://cackktvcert3i" path="res://Scenes/email_icon.tscn" id="11_1ngsi"]
@@ -20,7 +24,15 @@
 [ext_resource type="AudioStream" uid="uid://du547ia5a2wma" path="res://Assets/Audio/Cartoon Phone Talking Sound Effect.mp3" id="17_i0lf5"]
 [ext_resource type="Texture2D" uid="uid://d4jnusny4frxf" path="res://Assets/Sprites/player_speech_bubble.png" id="19_q77dj"]
 [ext_resource type="Texture2D" uid="uid://4t0vp3mi0hma" path="res://Assets/Sprites/boss_speech_bubble.png" id="19_suhre"]
-[ext_resource type="Texture2D" uid="uid://c38rf4yyydjo5" path="res://Assets/Sprites/Marian/boss2.png" id="21_oh2tj"]
+[ext_resource type="AudioStream" uid="uid://cow8u5o75f4yi" path="res://Assets/Audio/door-close-79921.mp3" id="24_1nfit"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7arjl"]
+bg_color = Color(0.881937, 0.881937, 0.881936, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wtqrs"]
 content_margin_left = 6.0
@@ -53,11 +65,11 @@ texture = ExtResource("3_1cqq8")
 
 [node name="Boss2" type="TextureRect" parent="."]
 visible = false
-offset_left = 386.0
-offset_top = 71.0
-offset_right = 631.0
-offset_bottom = 351.0
-texture = ExtResource("21_oh2tj")
+offset_left = 500.0
+offset_top = 183.0
+offset_right = 577.0
+offset_bottom = 273.0
+texture = ExtResource("4_gnrcg")
 
 [node name="JohnOffice" type="TextureRect" parent="."]
 offset_left = 133.0
@@ -67,6 +79,72 @@ offset_bottom = 278.0
 texture = ExtResource("4_7jg1b")
 flip_h = true
 
+[node name="TopOfDesk" type="TextureRect" parent="."]
+offset_left = 136.0
+offset_top = 271.0
+offset_right = 205.0
+offset_bottom = 273.0
+texture = ExtResource("6_i5xd8")
+
+[node name="Pointer1" type="TextureRect" parent="."]
+visible = false
+offset_left = 93.0
+offset_top = 34.0
+offset_right = 125.0
+offset_bottom = 82.0
+texture = ExtResource("7_qr53j")
+
+[node name="Pointer2" type="TextureRect" parent="."]
+visible = false
+offset_left = 246.0
+offset_top = 233.0
+offset_right = 278.0
+offset_bottom = 281.0
+rotation = 3.14159
+texture = ExtResource("7_5cp4l")
+
+[node name="TutorialPanel1" type="Panel" parent="."]
+visible = false
+offset_left = 146.0
+offset_top = 53.0
+offset_right = 441.0
+offset_bottom = 104.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_7arjl")
+
+[node name="TutorialLabel1" type="Label" parent="TutorialPanel1"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 24
+text = "Look here to see how many of each kind of task you have "
+autowrap_mode = 2
+
+[node name="TutorialPanel2" type="Panel" parent="."]
+visible = false
+offset_left = 208.0
+offset_top = 128.0
+offset_right = 442.0
+offset_bottom = 179.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_7arjl")
+
+[node name="TutorialLabel2" type="Label" parent="TutorialPanel2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 24
+text = "Click on your computer to open the desktop"
+autowrap_mode = 2
+
 [node name="Desktop" parent="." instance=ExtResource("1_dntc4")]
 position = Vector2(142, 224)
 
@@ -74,11 +152,13 @@ position = Vector2(142, 224)
 position = Vector2(97, 261)
 
 [node name="TaskbarPanel" type="Panel" parent="."]
+visible = false
 offset_left = 73.0
 offset_right = 281.0
 offset_bottom = 46.0
 
 [node name="MeetingTask" type="Control" parent="TaskbarPanel"]
+visible = false
 layout_mode = 2
 anchors_preset = 0
 offset_bottom = 46.0
@@ -92,6 +172,7 @@ offset_bottom = 43.0
 texture = ExtResource("7_frmic")
 
 [node name="MeetingCountLabel" type="Label" parent="TaskbarPanel"]
+visible = false
 layout_mode = 0
 offset_left = 184.0
 offset_top = 10.0
@@ -124,13 +205,23 @@ offset_right = 639.0
 offset_bottom = 350.0
 texture = ExtResource("8_3seal")
 
+[node name="EmailTo" type="LineEdit" parent="Screen"]
+visible = false
+layout_mode = 0
+offset_left = 108.0
+offset_top = 17.0
+offset_right = 446.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 24
+placeholder_text = "Send to:"
+
 [node name="EmailInput" parent="Screen" instance=ExtResource("3_im7m8")]
 visible = false
 layout_mode = 0
-offset_left = 114.0
-offset_top = 19.0
-offset_right = 441.0
-offset_bottom = 139.0
+offset_left = 108.0
+offset_top = 50.0
+offset_right = 446.0
+offset_bottom = 147.0
 theme_override_fonts/font = ExtResource("10_0t7c4")
 theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = SubResource("StyleBoxFlat_wtqrs")
@@ -142,10 +233,10 @@ wrap_mode = 1
 [node name="ExampleEmailPanel" type="Panel" parent="Screen"]
 visible = false
 layout_mode = 0
-offset_left = 114.0
-offset_top = 137.0
-offset_right = 441.0
-offset_bottom = 257.0
+offset_left = 108.0
+offset_top = 173.0
+offset_right = 446.0
+offset_bottom = 261.0
 
 [node name="ExampleEmailLabel" type="Label" parent="Screen/ExampleEmailPanel"]
 layout_mode = 1
@@ -158,7 +249,28 @@ theme_override_fonts/font = ExtResource("10_0t7c4")
 theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = ExtResource("11_v7qv3")
 text = "Type this"
-autowrap_mode = 2
+autowrap_mode = 3
+
+[node name="EmailRecipientPanel" type="Panel" parent="Screen"]
+visible = false
+layout_mode = 0
+offset_left = 108.0
+offset_top = 145.0
+offset_right = 446.0
+offset_bottom = 175.0
+
+[node name="EmailRecipientLabel" type="Label" parent="Screen/EmailRecipientPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("10_0t7c4")
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = ExtResource("11_v7qv3")
+text = "Send to:"
+autowrap_mode = 3
 
 [node name="NoEmailsPanel" type="Panel" parent="Screen"]
 visible = false
@@ -397,10 +509,10 @@ text = "x"
 [node name="Send" type="Button" parent="Screen"]
 visible = false
 layout_mode = 0
-offset_left = 396.0
-offset_top = 112.0
-offset_right = 440.0
-offset_bottom = 138.0
+offset_left = 401.0
+offset_top = 120.0
+offset_right = 445.0
+offset_bottom = 146.0
 theme_override_fonts/font = ExtResource("10_0t7c4")
 theme_override_font_sizes/font_size = 24
 theme_override_styles/focus = ExtResource("14_7raio")
@@ -427,6 +539,16 @@ position = Vector2(67, 52)
 
 [node name="calendar_icon" parent="Screen" instance=ExtResource("14_o0kic")]
 position = Vector2(67, 113)
+
+[node name="Pointer3" type="TextureRect" parent="."]
+visible = false
+offset_left = 236.0
+offset_top = 119.0
+offset_right = 268.0
+offset_bottom = 167.0
+rotation = 4.71239
+texture = ExtResource("7_5cp4l")
+flip_h = true
 
 [node name="PhonePanel" type="Panel" parent="."]
 visible = false
@@ -604,10 +726,10 @@ text = "<"
 
 [node name="BossSpeech" type="TextureRect" parent="."]
 visible = false
-offset_left = 116.0
-offset_top = 81.0
-offset_right = 316.0
-offset_bottom = 201.0
+offset_left = 229.0
+offset_top = 72.0
+offset_right = 429.0
+offset_bottom = 192.0
 texture = ExtResource("19_suhre")
 
 [node name="BossAudio" type="AudioStreamPlayer" parent="BossSpeech"]
@@ -635,6 +757,9 @@ theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 24
 text = "<"
 autowrap_mode = 2
+
+[node name="DoorShutting" type="AudioStreamPlayer" parent="BossSpeech"]
+stream = ExtResource("24_1nfit")
 
 [node name="Blocker" type="ColorRect" parent="."]
 visible = false

@@ -56,6 +56,15 @@ signal player_speech_finished
 @onready var john_office: TextureRect = $JohnOffice
 @onready var boss: TextureRect = $Boss
 @onready var boss_2: TextureRect = $Boss2
+@onready var door_shutting: AudioStreamPlayer = $BossSpeech/DoorShutting
+@onready var pointer_1: TextureRect = $Pointer1
+@onready var pointer_2: TextureRect = $Pointer2
+@onready var tutorial_panel_1: Panel = $TutorialPanel1
+@onready var tutorial_panel_2: Panel = $TutorialPanel2
+@onready var pointer_3: TextureRect = $Pointer3
+@onready var email_to: LineEdit = $Screen/EmailTo
+@onready var email_recipient_panel: Panel = $Screen/EmailRecipientPanel
+@onready var email_recipient_label: Label = $Screen/EmailRecipientPanel/EmailRecipientLabel
 
 var minutes: int
 var seconds: int
@@ -223,12 +232,12 @@ var reasons = [
 ]
 var all_names = []
 var attendee_buttons: Array
-var dialogue_text := [
+var event_tracker := [
 	['Ah, Mr. Hawthorne! It\'s so nice to meet you, my name\'s...', 0],
 	['Yeah that\'s great kid. You got any questions before you get started?', 1],
 	['I guess I\'m just a bit confused... What is it we do here exactly?', 0],
 	['We\'re a consulting company that helps other consulting companies find innovative technical solutions to real world', 1],
-	['problems in the Web3 and Web4 spaces while providing SAAS and synergy across all areas of modern day business.', 1],
+	['problems in the Web3 and Web4 spaces while providing SaaS and synergy across all areas of modern day business.', 1],
 	['...', 0],
 	['... What?', 0],
 	['Look, don\'t concern yourself on what we do, just focus on what you do.', 1],
@@ -239,15 +248,17 @@ var dialogue_text := [
 	['Wait, but if the AI already has the response ready, why do I need to type it up and send it?', 0],
 	['Look kid, do you want the job or not?', 1],
 	['Oh uh yes sir, I\'ll get right on it.', 0],
-	'break'
+	'email',
 ]
-var dialogue_tracker := 0
+@onready var event_index := 0
 @onready var speakers = [player_speech_label, boss_speech_label]
+@onready var tutorial_index := 0
+#@onready var tutorial := false
 
 #Other tasks: order lunch, hand out lunch
 
 func _ready() -> void:
-	open_close([blocker, day_label], true)
+	#open_close([blocker, day_label], true)
 	var line_edit = hour_picker.get_line_edit()
 	line_edit.context_menu_enabled = false
 	line_edit = minute_picker.get_line_edit()
@@ -273,16 +284,16 @@ func _ready() -> void:
 	
 	populate_list(all_names)
 	
-	var tween1 = get_tree().create_tween()
-	tween1.tween_property(day_label, "modulate:a", 0, 3)
-	await get_tree().create_timer(2.0).timeout
-	var tween2 = get_tree().create_tween()
-	tween2.tween_property(blocker, "modulate:a", 0, 3)
-	await get_tree().create_timer(2.0).timeout
-	day_label.visible = false
-	
-	boss_speech.visible = true
-	boss_speak('Hey there, I had heard we had a new hire! Hope you\'re enjoying your first day at DigiTech Innovative Solutions Incorporated.')
+	#var tween1 = get_tree().create_tween()
+	#tween1.tween_property(day_label, "modulate:a", 0, 3)
+	#await get_tree().create_timer(2.0).timeout
+	#var tween2 = get_tree().create_tween()
+	#tween2.tween_property(blocker, "modulate:a", 0, 3)
+	#await get_tree().create_timer(2.0).timeout
+	#day_label.visible = false
+	#boss_speech.visible = true
+	#skip_typewriter = false
+	#boss_speak('Hey there, I had heard we had a new hire! Hope you\'re enjoying your first day at DigiTech Innovative Solutions Incorporated.')
 
 func _process(delta: float) -> void:
 	var remaining_time = timer.time_left
@@ -302,15 +313,34 @@ func _input(event: InputEvent) -> void:
 		if typewriter_finished == false and blocker.visible:
 			skip_typewriter = true
 		else:
-			if typeof(dialogue_text[dialogue_tracker]) != 28:
-				#john_office.flip_h = false
-				boss.visible = false
+			if typeof(event_tracker[event_index]) == 28:
+				skip_typewriter = false
+				next_dialogue(event_index)
+			elif event_tracker[event_index] == 'email':
+				email_tutorial()
+			else:
 				boss_2.visible = true
 				blocker.visible = false
-				open_close([boss_speech, boss_speech_tick, player_speech, player_speech_tick], false)
-			else:
-				skip_typewriter = false
-				next_dialogue(dialogue_tracker)
+				open_close([boss, boss_speech, boss_speech_tick, player_speech, player_speech_tick], false)
+
+func email_tutorial():
+	if tutorial_index == 0:
+		open_close([boss, boss_speech, boss_speech_tick, player_speech, player_speech_tick], false)
+		door_shutting.play()
+		open_close([pointer_1, boss_2, taskbar_panel, tutorial_panel_1], true)
+		_on_new_email_pressed()
+		tutorial_index += 1
+	elif tutorial_index == 1:
+		open_close([pointer_1, boss_2, taskbar_panel, tutorial_panel_1], false)
+		open_close([pointer_2, tutorial_panel_2], true)
+		tutorial_index += 1
+	elif tutorial_index == 2:
+		open_close([pointer_2, tutorial_panel_2], false)
+		open_close([screen, pointer_3], true)
+		tutorial_index += 1
+	elif tutorial_index == 3:
+		pointer_3.visible = false
+		_on_email_icon_clicked()
 
 func open_close(nodes: Array, open: bool):
 	for i in nodes:
@@ -339,20 +369,20 @@ func _on_boss_speech_finished() -> void:
 	#advance_dialogue = true
 
 func next_dialogue(index: int):
-	var speaker = speakers[dialogue_text[index][1]]
+	var speaker = speakers[event_tracker[index][1]]
 	speaker.text = ''
 	if speaker == player_speech_label:
 		open_close([boss_speech, boss_speech_tick], false)
 		player_speech.visible = true
-		player_speak(dialogue_text[index][0])
+		player_speak(event_tracker[index][0])
 	else:
 		open_close([player_speech, player_speech_tick], false)
 		boss_speech.visible = true
-		boss_speak(dialogue_text[index][0])
-	dialogue_tracker += 1
+		boss_speak(event_tracker[index][0])
+	event_index += 1
 
 func send_email():
-	if email_input.text == example_email_label.text:
+	if email_input.text == example_email_label.text and email_to.text == email_recipient_label.text:
 		#_on_desktop_clicked()
 		#email_queue[0][0].queue_free()
 		email_queue.pop_front()
@@ -360,19 +390,21 @@ func send_email():
 		var temp_timer = Timer.new()
 		await get_tree().create_timer(0.01).timeout
 		email_input.text = ''
+		email_to.text = ''
 		if email_queue.size():
-			example_email_label.text = email_queue[0][1]
-			email_input.grab_focus()
+			example_email_label.text = email_queue[0][1][0]
+			email_recipient_label.text = email_queue[0][1][1]
+			email_to.grab_focus()
 		else:
 			icon_opened = false
 			timer.set_paused(true)
-			open_close([email_input, example_email, close_email, send], false)
+			open_close([email_input, example_email, close_email, send, email_to, email_recipient_panel], false)
 	else:
 		_on_desktop_clicked()
 		game_over()
 
-func choose_email() -> String:
-	return email_responses[randi_range(1, 60)]
+func choose_email() -> Array:
+	return [email_responses[randi_range(1, 60)], all_names[randi_range(0, 149)]]
 
 func _on_email_input_text_changed() -> void:
 	var new_email_text: String = email_input.text
@@ -500,11 +532,12 @@ func _on_email_icon_clicked() -> void:
 
 func open_email():
 	if email_queue.size():
-		example_email_label.text = email_queue[0][1]
-		email_input.grab_focus()
+		example_email_label.text = email_queue[0][1][0]
+		email_recipient_label.text = email_queue[0][1][1]
+		email_to.grab_focus()
 		email_opened = true
 		icon_opened = true
-		open_close([email_input, example_email, close_email, send], true)
+		open_close([email_input, example_email, close_email, send, email_to, email_recipient_panel], true)
 	else:
 		icon_opened = false
 		no_emails_panel.modulate.a = 1
@@ -516,7 +549,7 @@ func open_email():
 func _on_close_email_pressed() -> void:
 	email_opened = false
 	icon_opened = false
-	open_close([email_input, example_email, close_email, send], false)
+	open_close([email_input, example_email, close_email, send, email_to, email_recipient_panel], false)
 
 func _on_send_pressed() -> void:
 	send_email()
