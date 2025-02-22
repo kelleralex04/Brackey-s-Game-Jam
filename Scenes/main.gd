@@ -96,6 +96,9 @@ var hang_up_status := false
 var advance_dialogue := false
 var skip_typewriter := false
 var typewriter_finished := false
+var timer_length: int
+var email_to_cursor_line := 0
+var email_to_cursor_column := 0
 
 var calendar_list: Array = [
 	['Jan', 31],
@@ -249,8 +252,9 @@ var event_tracker := [
 	['Look kid, do you want the job or not?', 1],
 	['Oh uh yes sir, I\'ll get right on it.', 0],
 	'email',
+	['So how was your first day?', 1]
 ]
-@onready var event_index := 0
+@onready var event_index := 15
 @onready var speakers = [player_speech_label, boss_speech_label]
 @onready var tutorial_index := 0
 #@onready var tutorial := false
@@ -258,7 +262,8 @@ var event_tracker := [
 #Other tasks: order lunch, hand out lunch
 
 func _ready() -> void:
-	#open_close([blocker, day_label], true)
+	timer_length = 0.1
+	open_close([blocker, day_label], true)
 	var line_edit = hour_picker.get_line_edit()
 	line_edit.context_menu_enabled = false
 	line_edit = minute_picker.get_line_edit()
@@ -284,16 +289,16 @@ func _ready() -> void:
 	
 	populate_list(all_names)
 	
-	#var tween1 = get_tree().create_tween()
-	#tween1.tween_property(day_label, "modulate:a", 0, 3)
-	#await get_tree().create_timer(2.0).timeout
-	#var tween2 = get_tree().create_tween()
-	#tween2.tween_property(blocker, "modulate:a", 0, 3)
-	#await get_tree().create_timer(2.0).timeout
-	#day_label.visible = false
-	#boss_speech.visible = true
-	#skip_typewriter = false
-	#boss_speak('Hey there, I had heard we had a new hire! Hope you\'re enjoying your first day at DigiTech Innovative Solutions Incorporated.')
+	var tween1 = get_tree().create_tween()
+	tween1.tween_property(day_label, "modulate:a", 0, 2)
+	await get_tree().create_timer(timer_length).timeout
+	var tween2 = get_tree().create_tween()
+	tween2.tween_property(blocker, "modulate:a", 0, 2)
+	await get_tree().create_timer(timer_length).timeout
+	day_label.visible = false
+	boss_speech.visible = true
+	skip_typewriter = false
+	boss_speak('Hey there, I had heard we had a new hire! Hope you\'re enjoying your first day at DigiTech Innovative Solutions Incorporated.')
 
 func _process(delta: float) -> void:
 	var remaining_time = timer.time_left
@@ -328,7 +333,8 @@ func email_tutorial():
 		open_close([boss, boss_speech, boss_speech_tick, player_speech, player_speech_tick], false)
 		door_shutting.play()
 		open_close([pointer_1, boss_2, taskbar_panel, tutorial_panel_1], true)
-		_on_new_email_pressed()
+		for i in 1:
+			_on_new_email_pressed()
 		tutorial_index += 1
 	elif tutorial_index == 1:
 		open_close([pointer_1, tutorial_panel_1], false)
@@ -336,7 +342,8 @@ func email_tutorial():
 		tutorial_index += 1
 	elif tutorial_index == 2:
 		open_close([pointer_2, tutorial_panel_2], false)
-		open_close([screen, pointer_3], true)
+		_on_desktop_clicked()
+		pointer_3.visible = true
 		tutorial_index += 1
 	elif tutorial_index == 3:
 		pointer_3.visible = false
@@ -349,7 +356,17 @@ func email_tutorial():
 		tutorial_index += 1
 	elif tutorial_index == 5:
 		$TutorialPanel3.visible = false
-		blocker.visible = false
+		_on_close_email_pressed()
+		_on_close_screen_pressed()
+		open_close([$TutorialPanel4, $Pointer4, $TimerPanel], true)
+		tutorial_index += 1
+	elif tutorial_index == 6:
+		open_close([$TutorialPanel4, $Pointer4], false)
+		open_close([$Pointer5, $TutorialPanel5, $StartTimer], true)
+		tutorial_index += 1
+	elif tutorial_index == 7:
+		open_close([$Pointer5, $TutorialPanel5], false)
+		#blocker.visible = false
 
 func open_close(nodes: Array, open: bool):
 	for i in nodes:
@@ -403,17 +420,19 @@ func send_email():
 		if email_queue.size():
 			example_email_label.text = email_queue[0][1][0]
 			email_recipient_label.text = email_queue[0][1][1]
+			email_to.max_length = email_recipient_label.text.length()
 			email_to.grab_focus()
 		else:
 			icon_opened = false
-			timer.set_paused(true)
 			open_close([email_input, example_email, close_email, send, email_to, email_recipient_panel], false)
+			day_finished()
 	else:
 		_on_desktop_clicked()
 		game_over()
 
 func choose_email() -> Array:
-	return [email_responses[randi_range(1, 60)], all_names[randi_range(0, 149)]]
+	#return [email_responses[randi_range(1, 60)], all_names[randi_range(0, 149)]]
+	return ['test', 'test']
 
 func _on_email_input_text_changed() -> void:
 	var new_email_text: String = email_input.text
@@ -435,6 +454,15 @@ func _on_email_input_text_changed() -> void:
 
 
 func _on_email_to_text_changed(new_text: String) -> void:
+	#if new_text.length() > email_recipient_label.text.length():
+		#new_text = new_text.left(new_text.length() - 1)
+		##email_to.set_caret_line(email_to.cursor_line)
+		#email_to.set_caret_column(email_to_cursor_column)
+	#
+	#email_to.text = new_text
+	##email_to_cursor_line = email_to.get_caret_line()
+	#email_to_cursor_column = email_to.get_caret_column()
+	
 	for i in range(new_text.length()):
 		if new_text[i] != email_recipient_label.text[i]:
 			email_to.add_theme_color_override('font_color', Color(1, 0, 0))
@@ -525,6 +553,8 @@ func _on_new_email_pressed() -> void:
 
 func _on_start_timer_pressed() -> void:
 	timer.start(timer.wait_time)
+	blocker.visible = false
+	$StartTimer.visible = false
 
 func _on_timer_timeout() -> void:
 	game_over()
@@ -551,6 +581,7 @@ func _on_email_icon_clicked() -> void:
 
 func open_email():
 	if email_queue.size():
+		email_to.max_length = email_recipient_label.text.length()
 		example_email_label.text = email_queue[0][1][0]
 		email_recipient_label.text = email_queue[0][1][1]
 		email_to.grab_focus()
@@ -737,3 +768,20 @@ func _on_hang_up_pressed() -> void:
 	hang_up.visible = false
 	hang_up_status = true
 	_on_phone_clicked()
+
+func day_finished():
+	if !email_queue.size():
+		skip_typewriter = false
+		timer.set_paused(true)
+		_on_close_screen_pressed()
+		event_index += 1
+		blocker.visible = true
+		var tween1 = get_tree().create_tween()
+		tween1.tween_property(blocker, "modulate:a", 1, 2)
+		await get_tree().create_timer(2).timeout
+		boss_2.visible = false
+		boss.visible = true
+		var tween2 = get_tree().create_tween()
+		tween2.tween_property(blocker, "modulate:a", 0, 2)
+		await get_tree().create_timer(2).timeout
+		next_dialogue(event_index)

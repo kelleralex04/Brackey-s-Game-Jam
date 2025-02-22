@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://578yfpfkbim6"]
+[gd_scene load_steps=31 format=3 uid="uid://578yfpfkbim6"]
 
 [ext_resource type="Script" path="res://Scenes/main.gd" id="1_7vj2b"]
 [ext_resource type="PackedScene" uid="uid://dlcv1qrrvtfet" path="res://Scenes/desktop.tscn" id="1_dntc4"]
@@ -24,6 +24,7 @@
 [ext_resource type="AudioStream" uid="uid://du547ia5a2wma" path="res://Assets/Audio/Cartoon Phone Talking Sound Effect.mp3" id="17_i0lf5"]
 [ext_resource type="Texture2D" uid="uid://d4jnusny4frxf" path="res://Assets/Sprites/player_speech_bubble.png" id="19_q77dj"]
 [ext_resource type="Texture2D" uid="uid://4t0vp3mi0hma" path="res://Assets/Sprites/boss_speech_bubble.png" id="19_suhre"]
+[ext_resource type="StyleBox" uid="uid://4jivtjpvot6u" path="res://Assets/StyleBoxes/timer_button.tres" id="21_bpba8"]
 [ext_resource type="AudioStream" uid="uid://cow8u5o75f4yi" path="res://Assets/Audio/door-close-79921.mp3" id="24_1nfit"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7arjl"]
@@ -152,6 +153,7 @@ position = Vector2(142, 224)
 position = Vector2(97, 261)
 
 [node name="TaskbarPanel" type="Panel" parent="."]
+visible = false
 offset_left = 73.0
 offset_right = 281.0
 offset_bottom = 46.0
@@ -584,7 +586,7 @@ visible = false
 offset_left = 61.0
 offset_top = 51.0
 offset_right = 301.0
-offset_bottom = 188.0
+offset_bottom = 213.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_7arjl")
 
 [node name="TutorialLabel4" type="Label" parent="TutorialPanel4"]
@@ -598,7 +600,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 24
-text = "Lastly, this is your remaining time for the day. You can add time by changing the difficulty in the main menu."
+text = "Lastly, this is your remaining time for the day. You can change the time limit by changing the difficulty in the main menu."
 autowrap_mode = 2
 
 [node name="PhonePanel" type="Panel" parent="."]
@@ -679,19 +681,45 @@ theme_override_font_sizes/font_size = 24
 text = "Hang Up"
 
 [node name="NewEmail" type="Button" parent="."]
+visible = false
 offset_left = 544.0
 offset_top = 31.0
 offset_right = 638.0
 offset_bottom = 62.0
 text = "New Email"
 
-[node name="StartTimer" type="Button" parent="."]
-offset_left = 544.0
-offset_right = 639.0
-offset_bottom = 31.0
-text = "Start Timer"
+[node name="Pointer5" type="TextureRect" parent="."]
+visible = false
+offset_left = 568.0
+offset_top = 23.0
+offset_right = 600.0
+offset_bottom = 71.0
+texture = ExtResource("7_5cp4l")
+
+[node name="TutorialPanel5" type="Panel" parent="."]
+visible = false
+offset_left = 397.0
+offset_top = 73.0
+offset_right = 637.0
+offset_bottom = 126.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_7arjl")
+
+[node name="TutorialLabel5" type="Label" parent="TutorialPanel5"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_right = -3.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 24
+text = "When you're ready, click here to start your day."
+autowrap_mode = 2
 
 [node name="TimerPanel" type="Panel" parent="."]
+visible = false
 offset_right = 66.0
 offset_bottom = 30.0
 
@@ -827,6 +855,25 @@ offset_bottom = 158.0
 theme_override_font_sizes/font_size = 64
 text = "Day 1"
 
+[node name="StartTimer" type="Button" parent="."]
+visible = false
+offset_left = 527.0
+offset_right = 640.0
+offset_bottom = 32.0
+theme_override_font_sizes/font_size = 24
+theme_override_styles/focus = ExtResource("21_bpba8")
+theme_override_styles/disabled_mirrored = ExtResource("21_bpba8")
+theme_override_styles/disabled = ExtResource("21_bpba8")
+theme_override_styles/hover_pressed_mirrored = ExtResource("21_bpba8")
+theme_override_styles/hover_pressed = ExtResource("21_bpba8")
+theme_override_styles/hover_mirrored = ExtResource("21_bpba8")
+theme_override_styles/hover = ExtResource("21_bpba8")
+theme_override_styles/pressed_mirrored = ExtResource("21_bpba8")
+theme_override_styles/pressed = ExtResource("21_bpba8")
+theme_override_styles/normal_mirrored = ExtResource("21_bpba8")
+theme_override_styles/normal = ExtResource("21_bpba8")
+text = "Start Day"
+
 [connection signal="boss_speech_finished" from="." to="." method="_on_boss_speech_finished"]
 [connection signal="player_speech_finished" from="." to="." method="_on_player_speech_finished"]
 [connection signal="desktop_clicked" from="Desktop" to="." method="_on_desktop_clicked"]
@@ -855,7 +902,7 @@ text = "Day 1"
 [connection signal="pressed" from="PhonePanel/HoldPhone" to="." method="_on_hold_phone_pressed"]
 [connection signal="pressed" from="PhonePanel/HangUp" to="." method="_on_hang_up_pressed"]
 [connection signal="pressed" from="NewEmail" to="." method="_on_new_email_pressed"]
-[connection signal="pressed" from="StartTimer" to="." method="_on_start_timer_pressed"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="pressed" from="GameOverPanel/Restart" to="." method="_on_restart_pressed"]
 [connection signal="gui_input" from="Blocker" to="." method="_on_blocker_gui_input"]
+[connection signal="pressed" from="StartTimer" to="." method="_on_start_timer_pressed"]
