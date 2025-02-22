@@ -266,20 +266,25 @@ var event_tracker := [
 	['There may even be a promotion coming your way!', 1],
 	['Well great! I\'ll be in extra early tomorrow to learn about my new tasks.', 0],
 	['That\'s the spirit kid!', 1],
-	'next day'
-	
+	'next day',
+	['sdflkjasdf', 1],
+	['sdflkjasdf', 0],
+	'phone',
+	#'test'
 ]
 @onready var event_index := 15
 @onready var speakers = [player_speech_label, boss_speech_label]
 @onready var tutorial_index := 0
 @onready var day = 1
+@onready var day_changing := false
+@onready var skip_tutorial := true
 #@onready var tutorial := false
 
 #Other tasks: order lunch, hand out lunch
 
 func _ready() -> void:
 	boom.play()
-	timer_length = 2
+	timer_length = 0.1
 	open_close([blocker, day_label], true)
 	var line_edit = hour_picker.get_line_edit()
 	line_edit.context_menu_enabled = false
@@ -338,17 +343,33 @@ func _input(event: InputEvent) -> void:
 			if typeof(event_tracker[event_index]) == 28:
 				skip_typewriter = false
 				next_dialogue(event_index)
+			elif event_tracker[event_index] == 'test':
+				open_close([blocker, day_label], false)
+				open_close([taskbar_panel, time_left, $TimerPanel, $TaskbarPanel/MeetingTask, $TaskbarPanel/MeetingCountLabel], true)
+				add_meeting()
+			elif event_tracker[event_index] == 'next day' and !day_changing:
+				tutorial_index = 0
+				next_day()
+			elif day_changing:
+				pass
+			elif event_tracker[event_index] == 'phone':
+				phone_tutorial()
+			elif skip_tutorial:
+				if !email_queue.size():
+					for i in 1:
+						_on_new_email_pressed()
+					print('test')
+					open_close([boss_2, taskbar_panel, $TaskbarPanel/MeetingTask, $TaskbarPanel/MeetingCountLabel, $StartTimer, $TimerPanel], true)
+					open_close([boss, boss_speech, boss_speech_tick, player_speech, player_speech_tick], false)
 			elif event_tracker[event_index] == 'email':
 				email_tutorial()
-			elif event_tracker[event_index] == 'next day':
-				next_day()
 			else:
 				boss_2.visible = true
-				blocker.visible = false
-				open_close([boss, boss_speech, boss_speech_tick, player_speech, player_speech_tick], false)
+				open_close([blocker, boss, boss_speech, boss_speech_tick, player_speech, player_speech_tick], false)
 
 func next_day():
 	day += 1
+	day_changing = true
 	var tween1 = get_tree().create_tween()
 	tween1.tween_property(blocker, "modulate:a", 1, 2)
 	await get_tree().create_timer(timer_length).timeout
@@ -356,13 +377,22 @@ func next_day():
 	day_label.text = 'Day 2'
 	day_label.visible = true
 	day_label.modulate = Color(1, 1, 1, 1)
+	boss_speech.visible = false
+	#open_close([boss, boss_speech], false)
+	#boss_2.visible = true
 	await get_tree().create_timer(timer_length).timeout
 	var tween2 = get_tree().create_tween()
 	tween2.tween_property(blocker, "modulate:a", 0, 2)
 	var tween3 = get_tree().create_tween()
 	tween3.tween_property(day_label, "modulate:a", 0, 2)
 	await get_tree().create_timer(timer_length).timeout
-	
+	event_index += 1
+	day_changing = false
+	boss_speech.visible = true
+	skip_typewriter = false
+	boss_speech_label.text = ''
+	player_speech_label.text = ''
+	boss_speak('Alright who\'s ready for another great day!')
 
 func email_tutorial():
 	if tutorial_index == 0:
@@ -403,6 +433,24 @@ func email_tutorial():
 	elif tutorial_index == 7:
 		open_close([$Pointer5, $TutorialPanel5], false)
 		#blocker.visible = false
+
+func phone_tutorial():
+	if tutorial_index == 0:
+		open_close([boss, boss_speech, boss_speech_tick, player_speech, player_speech_tick], false)
+		open_close([boss_2, $TaskbarPanel/MeetingTask, $TaskbarPanel/MeetingCountLabel, $TutorialPanel6, $Pointer6], true)
+		boss_2.visible = true
+		door_shutting.play()
+		for i in 3:
+			add_meeting()
+		tutorial_index += 1
+	if tutorial_index == 1:
+		open_close([$TutorialPanel6, $Pointer6], false)
+		open_close([$TutorialPanel7, $Pointer7], false)
+		tutorial_index += 1
+	if tutorial_index == 2:
+		open_close([$TutorialPanel7, $Pointer7], false)
+		open_close([$TutorialPanel8, $Pointer8], false)
+		tutorial_index += 1
 
 func open_close(nodes: Array, open: bool):
 	for i in nodes:
@@ -506,20 +554,21 @@ func _on_desktop_clicked() -> void:
 	screen.visible = true
 
 func _on_phone_clicked() -> void:
-	skip_typewriter = false
-	#if !open_panel or open_panel and phone_opened:
-		#open_panel = !open_panel
-	if phone_opened and typing:
-		typewriter_timer.set_paused(true)
-	elif !phone_opened and typing:
-		typewriter_timer.set_paused(false)
-	elif call_finished or hang_up_status:
-		pass
+	if meeting_queue.size():
+		skip_typewriter = false
+		if phone_opened and typing:
+			typewriter_timer.set_paused(true)
+		elif !phone_opened and typing:
+			typewriter_timer.set_paused(false)
+		elif call_finished or hang_up_status:
+			pass
+		else:
+			phone_call()
+		phone_opened = !phone_opened
+		phone_panel.visible = !phone_panel.visible
+		hang_up_status = false
 	else:
-		phone_call()
-	phone_opened = !phone_opened
-	phone_panel.visible = !phone_panel.visible
-	hang_up_status = false
+		pass
 
 func phone_call():
 	typing = true
@@ -559,7 +608,8 @@ func _on_typewriter_timer_timeout():
 		cur_label.text = full_text
 		typewriter_finished = true
 		typewriter_index = 0
-		typewriter_timer.queue_free()
+		if typewriter_timer:
+			typewriter_timer.queue_free()
 		typing_finished.emit()
 		return
 
@@ -735,17 +785,18 @@ func _on_continue_call_pressed() -> void:
 	call_finished = false
 	continue_call.visible = false
 	if cur_reason == 'Schedule Meeting':
-		meeting_attendees = []
-		for i in randi_range(1, 3):
-			meeting_attendees.append(company_employee[rand][i + 1])
-		var month = randi_range(0, 11)
-		var minute = randi_range(1, 59)
-		var opt_zero: String = '0' if minute < 10 else ''
-		minute = opt_zero + str(minute)
-		meeting_queue.append([meeting_attendees, calendar_list[month][0], randi_range(1, calendar_list[month][1]) , str(randi_range(0, 23)),  minute])
-		meeting_count_label.text = str(meeting_queue.size())
+		#meeting_attendees = []
+		#for i in randi_range(1, 3):
+			#meeting_attendees.append(company_employee[rand][i + 1])
+		#var month = randi_range(0, 11)
+		#var minute = randi_range(1, 59)
+		#var opt_zero: String = '0' if minute < 10 else ''
+		#minute = opt_zero + str(minute)
+		#meeting_queue.append([meeting_attendees, calendar_list[month][0], randi_range(1, calendar_list[month][1]) , str(randi_range(0, 23)),  minute])
+		#meeting_count_label.text = str(meeting_queue.size())
+		var cur_meeting_attendees = meeting_queue[0][0]
 		var all_attendees = ''
-		for i in meeting_attendees:
+		for i in cur_meeting_attendees:
 			all_attendees += '\n' + i
 		phone_vbox.visible = false
 		meeting_vbox.visible = true
@@ -759,6 +810,18 @@ func _on_continue_call_pressed() -> void:
 		call_finished = true
 		typing = false
 		hang_up.visible = true
+
+func add_meeting():
+		rand = randi_range(0, 49)
+		meeting_attendees = []
+		for i in randi_range(1, 3):
+			meeting_attendees.append(company_employee[rand][i + 1])
+		var month = randi_range(0, 11)
+		var minute = randi_range(1, 59)
+		var opt_zero: String = '0' if minute < 10 else ''
+		minute = opt_zero + str(minute)
+		meeting_queue.append([meeting_attendees, calendar_list[month][0], randi_range(1, calendar_list[month][1]) , str(randi_range(0, 23)),  minute])
+		meeting_count_label.text = str(meeting_queue.size())
 
 func format_time(value: int, node: SpinBox):
 	var opt_zero: String = '0' if value < 10 else ''
@@ -793,8 +856,11 @@ func _on_hang_up_pressed() -> void:
 	meeting_vbox.visible = false
 	call_finished = false
 	hang_up.visible = false
-	hang_up_status = true
-	_on_phone_clicked()
+	#hang_up_status = true
+	phone_opened = !phone_opened
+	phone_panel.visible = !phone_panel.visible
+	#hang_up_status = false
+	#_on_phone_clicked()
 
 func day_finished():
 	if !email_queue.size():

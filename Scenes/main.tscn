@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://578yfpfkbim6"]
+[gd_scene load_steps=35 format=3 uid="uid://578yfpfkbim6"]
 
 [ext_resource type="Script" path="res://Scenes/main.gd" id="1_7vj2b"]
 [ext_resource type="PackedScene" uid="uid://dlcv1qrrvtfet" path="res://Scenes/desktop.tscn" id="1_dntc4"]
@@ -27,6 +27,7 @@
 [ext_resource type="StyleBox" uid="uid://4jivtjpvot6u" path="res://Assets/StyleBoxes/timer_button.tres" id="21_bpba8"]
 [ext_resource type="AudioStream" uid="uid://cow8u5o75f4yi" path="res://Assets/Audio/door-close-79921.mp3" id="24_1nfit"]
 [ext_resource type="AudioStream" uid="uid://dlsdxs7telwva" path="res://Assets/Audio/boom-2e-spooky-237006.mp3" id="27_aist2"]
+[ext_resource type="Texture2D" uid="uid://bavv3pg3fxbim" path="res://Assets/Sprites/AngryFace.png" id="28_op1tu"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7arjl"]
 bg_color = Color(0.881937, 0.881937, 0.881936, 1)
@@ -49,6 +50,12 @@ border_color = Color(0, 0, 0, 1)
 [sub_resource type="ViewportTexture" id="ViewportTexture_8itqh"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_wxx47"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2qp3d"]
+bg_color = Color(0.340339, 0.340339, 0.340339, 0.4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_htn1c"]
+bg_color = Color(1, 0, 0, 1)
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_7vj2b")
@@ -153,6 +160,35 @@ position = Vector2(142, 224)
 [node name="Phone" parent="." instance=ExtResource("5_skwty")]
 position = Vector2(97, 261)
 
+[node name="Pointer7" type="TextureRect" parent="."]
+offset_left = 111.0
+offset_top = 251.0
+offset_right = 143.0
+offset_bottom = 299.0
+rotation = 3.14159
+texture = ExtResource("7_5cp4l")
+
+[node name="TutorialPanel7" type="Panel" parent="."]
+visible = false
+offset_left = 100.0
+offset_top = 89.0
+offset_right = 366.0
+offset_bottom = 170.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_7arjl")
+
+[node name="TutorialLabel7" type="Label" parent="TutorialPanel7"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 24
+text = "Look here to see how many meetings you have left to schedule for the day"
+autowrap_mode = 2
+
 [node name="TaskbarPanel" type="Panel" parent="."]
 visible = false
 offset_left = 73.0
@@ -160,7 +196,6 @@ offset_right = 281.0
 offset_bottom = 46.0
 
 [node name="MeetingTask" type="Control" parent="TaskbarPanel"]
-visible = false
 layout_mode = 2
 anchors_preset = 0
 offset_bottom = 46.0
@@ -174,7 +209,6 @@ offset_bottom = 43.0
 texture = ExtResource("7_frmic")
 
 [node name="MeetingCountLabel" type="Label" parent="TaskbarPanel"]
-visible = false
 layout_mode = 0
 offset_left = 184.0
 offset_top = 10.0
@@ -198,6 +232,35 @@ offset_right = 100.0
 offset_bottom = 34.0
 theme_override_font_sizes/font_size = 24
 text = "0"
+
+[node name="Pointer6" type="TextureRect" parent="."]
+visible = false
+offset_left = 212.0
+offset_top = 36.0
+offset_right = 244.0
+offset_bottom = 84.0
+texture = ExtResource("7_qr53j")
+
+[node name="TutorialPanel6" type="Panel" parent="."]
+visible = false
+offset_left = 100.0
+offset_top = 89.0
+offset_right = 366.0
+offset_bottom = 170.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_7arjl")
+
+[node name="TutorialLabel6" type="Label" parent="TutorialPanel6"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 24
+text = "Look here to see how many meetings you have left to schedule for the day"
+autowrap_mode = 2
 
 [node name="Screen" type="TextureRect" parent="."]
 visible = false
@@ -877,6 +940,25 @@ text = "Start Day"
 
 [node name="Boom" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("27_aist2")
+
+[node name="AngerMeter" type="ProgressBar" parent="."]
+visible = false
+offset_left = 54.0
+offset_top = 32.0
+offset_right = 123.0
+offset_bottom = 45.0
+theme_override_styles/background = SubResource("StyleBoxFlat_2qp3d")
+theme_override_styles/fill = SubResource("StyleBoxFlat_htn1c")
+value = 50.0
+show_percentage = false
+
+[node name="AngryFace" type="TextureRect" parent="."]
+visible = false
+offset_left = 12.0
+offset_top = 14.0
+offset_right = 44.0
+offset_bottom = 46.0
+texture = ExtResource("28_op1tu")
 
 [connection signal="boss_speech_finished" from="." to="." method="_on_boss_speech_finished"]
 [connection signal="player_speech_finished" from="." to="." method="_on_player_speech_finished"]
