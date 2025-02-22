@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://578yfpfkbim6"]
+[gd_scene load_steps=32 format=3 uid="uid://578yfpfkbim6"]
 
 [ext_resource type="Script" path="res://Scenes/main.gd" id="1_7vj2b"]
 [ext_resource type="PackedScene" uid="uid://dlcv1qrrvtfet" path="res://Scenes/desktop.tscn" id="1_dntc4"]
@@ -26,6 +26,7 @@
 [ext_resource type="Texture2D" uid="uid://4t0vp3mi0hma" path="res://Assets/Sprites/boss_speech_bubble.png" id="19_suhre"]
 [ext_resource type="StyleBox" uid="uid://4jivtjpvot6u" path="res://Assets/StyleBoxes/timer_button.tres" id="21_bpba8"]
 [ext_resource type="AudioStream" uid="uid://cow8u5o75f4yi" path="res://Assets/Audio/door-close-79921.mp3" id="24_1nfit"]
+[ext_resource type="AudioStream" uid="uid://dlsdxs7telwva" path="res://Assets/Audio/boom-2e-spooky-237006.mp3" id="27_aist2"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7arjl"]
 bg_color = Color(0.881937, 0.881937, 0.881936, 1)
@@ -873,6 +874,9 @@ theme_override_styles/pressed = ExtResource("21_bpba8")
 theme_override_styles/normal_mirrored = ExtResource("21_bpba8")
 theme_override_styles/normal = ExtResource("21_bpba8")
 text = "Start Day"
+
+[node name="Boom" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("27_aist2")
 
 [connection signal="boss_speech_finished" from="." to="." method="_on_boss_speech_finished"]
 [connection signal="player_speech_finished" from="." to="." method="_on_player_speech_finished"]

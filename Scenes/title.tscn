@@ -50,4 +50,10 @@ offset_bottom = 304.0
 texture = ExtResource("4_05cud")
 flip_h = true
 
+[node name="ColorRect" type="ColorRect" parent="."]
+visible = false
+modulate = Color(0, 0, 0, 0)
+offset_right = 640.0
+offset_bottom = 360.0
+
 [connection signal="pressed" from="StartGame" to="." method="_on_start_game_pressed"]

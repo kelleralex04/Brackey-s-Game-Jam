@@ -65,6 +65,7 @@ signal player_speech_finished
 @onready var email_to: LineEdit = $Screen/EmailTo
 @onready var email_recipient_panel: Panel = $Screen/EmailRecipientPanel
 @onready var email_recipient_label: Label = $Screen/EmailRecipientPanel/EmailRecipientLabel
+@onready var boom: AudioStreamPlayer = $Boom
 
 var minutes: int
 var seconds: int
@@ -252,17 +253,33 @@ var event_tracker := [
 	['Look kid, do you want the job or not?', 1],
 	['Oh uh yes sir, I\'ll get right on it.', 0],
 	'email',
-	['So how was your first day?', 1]
+	['So how was your first day?', 1],
+	['Great, although I\'ve gotta say these emails are still pretty mean spirited.', 0],
+	['Ah, I\'m sure it\'s fine. Now listen.', 1],
+	['Unfortunately we had to let go of our other receptionist today so you\'ll be picking up her duties starting tomorrow.', 1],
+	['Oh no, that\'s terrible. What was she fired for?', 0],
+	['We just felt that her our goals weren\'t aligning for optimal officeplace workflow.', 1],
+	['Don\'t worry though, your job is completely safe... as long as you continue the good work that is.', 1],
+	['Well OK, I guess I\'m glad to have the opportunity to pick up some more responsibilies.', 0],
+	['Any chance these extra duties come with a pay raise?', 0],
+	['Oh certainly, once you\'ve proven you\'re up to the task we can definitely talk money.', 1],
+	['There may even be a promotion coming your way!', 1],
+	['Well great! I\'ll be in extra early tomorrow to learn about my new tasks.', 0],
+	['That\'s the spirit kid!', 1],
+	'next day'
+	
 ]
 @onready var event_index := 15
 @onready var speakers = [player_speech_label, boss_speech_label]
 @onready var tutorial_index := 0
+@onready var day = 1
 #@onready var tutorial := false
 
 #Other tasks: order lunch, hand out lunch
 
 func _ready() -> void:
-	timer_length = 0.1
+	boom.play()
+	timer_length = 2
 	open_close([blocker, day_label], true)
 	var line_edit = hour_picker.get_line_edit()
 	line_edit.context_menu_enabled = false
@@ -290,7 +307,7 @@ func _ready() -> void:
 	populate_list(all_names)
 	
 	var tween1 = get_tree().create_tween()
-	tween1.tween_property(day_label, "modulate:a", 0, 2)
+	tween1.tween_property(day_label, "modulate:a", 0, 4)
 	await get_tree().create_timer(timer_length).timeout
 	var tween2 = get_tree().create_tween()
 	tween2.tween_property(blocker, "modulate:a", 0, 2)
@@ -323,10 +340,29 @@ func _input(event: InputEvent) -> void:
 				next_dialogue(event_index)
 			elif event_tracker[event_index] == 'email':
 				email_tutorial()
+			elif event_tracker[event_index] == 'next day':
+				next_day()
 			else:
 				boss_2.visible = true
 				blocker.visible = false
 				open_close([boss, boss_speech, boss_speech_tick, player_speech, player_speech_tick], false)
+
+func next_day():
+	day += 1
+	var tween1 = get_tree().create_tween()
+	tween1.tween_property(blocker, "modulate:a", 1, 2)
+	await get_tree().create_timer(timer_length).timeout
+	boom.play()
+	day_label.text = 'Day 2'
+	day_label.visible = true
+	day_label.modulate = Color(1, 1, 1, 1)
+	await get_tree().create_timer(timer_length).timeout
+	var tween2 = get_tree().create_tween()
+	tween2.tween_property(blocker, "modulate:a", 0, 2)
+	var tween3 = get_tree().create_tween()
+	tween3.tween_property(day_label, "modulate:a", 0, 2)
+	await get_tree().create_timer(timer_length).timeout
+	
 
 func email_tutorial():
 	if tutorial_index == 0:
@@ -454,15 +490,6 @@ func _on_email_input_text_changed() -> void:
 
 
 func _on_email_to_text_changed(new_text: String) -> void:
-	#if new_text.length() > email_recipient_label.text.length():
-		#new_text = new_text.left(new_text.length() - 1)
-		##email_to.set_caret_line(email_to.cursor_line)
-		#email_to.set_caret_column(email_to_cursor_column)
-	#
-	#email_to.text = new_text
-	##email_to_cursor_line = email_to.get_caret_line()
-	#email_to_cursor_column = email_to.get_caret_column()
-	
 	for i in range(new_text.length()):
 		if new_text[i] != email_recipient_label.text[i]:
 			email_to.add_theme_color_override('font_color', Color(1, 0, 0))
@@ -528,7 +555,7 @@ func call_typewriter(label: Label ,text: String):
 	add_child(typewriter_timer)
 
 func _on_typewriter_timer_timeout():
-	if skip_typewriter:
+	if skip_typewriter and typewriter_timer:
 		cur_label.text = full_text
 		typewriter_finished = true
 		typewriter_index = 0
