@@ -250,7 +250,7 @@ var event_tracker := [
 	['Oh uh yes sir, I\'ll get right on it.', 0],
 	'email',
 ]
-@onready var event_index := 0
+@onready var event_index := 15
 @onready var speakers = [player_speech_label, boss_speech_label]
 @onready var tutorial_index := 0
 #@onready var tutorial := false
@@ -258,7 +258,7 @@ var event_tracker := [
 #Other tasks: order lunch, hand out lunch
 
 func _ready() -> void:
-	#open_close([blocker, day_label], true)
+	open_close([blocker, day_label], true)
 	var line_edit = hour_picker.get_line_edit()
 	line_edit.context_menu_enabled = false
 	line_edit = minute_picker.get_line_edit()
@@ -284,16 +284,16 @@ func _ready() -> void:
 	
 	populate_list(all_names)
 	
-	#var tween1 = get_tree().create_tween()
-	#tween1.tween_property(day_label, "modulate:a", 0, 3)
-	#await get_tree().create_timer(2.0).timeout
-	#var tween2 = get_tree().create_tween()
-	#tween2.tween_property(blocker, "modulate:a", 0, 3)
-	#await get_tree().create_timer(2.0).timeout
-	#day_label.visible = false
-	#boss_speech.visible = true
-	#skip_typewriter = false
-	#boss_speak('Hey there, I had heard we had a new hire! Hope you\'re enjoying your first day at DigiTech Innovative Solutions Incorporated.')
+	var tween1 = get_tree().create_tween()
+	tween1.tween_property(day_label, "modulate:a", 0, 3)
+	await get_tree().create_timer(2.0).timeout
+	var tween2 = get_tree().create_tween()
+	tween2.tween_property(blocker, "modulate:a", 0, 3)
+	await get_tree().create_timer(2.0).timeout
+	day_label.visible = false
+	boss_speech.visible = true
+	skip_typewriter = false
+	boss_speak('Hey there, I had heard we had a new hire! Hope you\'re enjoying your first day at DigiTech Innovative Solutions Incorporated.')
 
 func _process(delta: float) -> void:
 	var remaining_time = timer.time_left
@@ -331,7 +331,7 @@ func email_tutorial():
 		_on_new_email_pressed()
 		tutorial_index += 1
 	elif tutorial_index == 1:
-		open_close([pointer_1, boss_2, taskbar_panel, tutorial_panel_1], false)
+		open_close([pointer_1, tutorial_panel_1], false)
 		open_close([pointer_2, tutorial_panel_2], true)
 		tutorial_index += 1
 	elif tutorial_index == 2:
@@ -341,6 +341,14 @@ func email_tutorial():
 	elif tutorial_index == 3:
 		pointer_3.visible = false
 		_on_email_icon_clicked()
+		$TutorialPanel3.visible = true
+		tutorial_index += 1
+	elif tutorial_index == 4:
+		$TutorialPanel3/TutorialLabel3.text = 'Make sure you copy everything exactly. This is an important week for Mr. Hawthorne so Nothing Can Go Wrong!'
+		tutorial_index += 1
+	elif tutorial_index == 5:
+		$TutorialPanel3.visible = false
+		blocker.visible = false
 
 func open_close(nodes: Array, open: bool):
 	for i in nodes:
@@ -423,6 +431,16 @@ func _on_email_input_text_changed() -> void:
 			break
 		else:
 			email_input.add_theme_color_override('font_color', Color(1, 1, 1))
+
+
+func _on_email_to_text_changed(new_text: String) -> void:
+	for i in range(new_text.length()):
+		if new_text[i] != email_recipient_label.text[i]:
+			email_to.add_theme_color_override('font_color', Color(1, 0, 0))
+			break
+		else:
+			email_to.add_theme_color_override('font_color', Color(1, 1, 1))
+
 
 func _on_desktop_clicked() -> void:
 	#if email_queue.size():

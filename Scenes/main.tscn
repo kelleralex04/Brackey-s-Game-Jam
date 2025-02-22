@@ -152,7 +152,6 @@ position = Vector2(142, 224)
 position = Vector2(97, 261)
 
 [node name="TaskbarPanel" type="Panel" parent="."]
-visible = false
 offset_left = 73.0
 offset_right = 281.0
 offset_bottom = 46.0
@@ -550,6 +549,58 @@ rotation = 4.71239
 texture = ExtResource("7_5cp4l")
 flip_h = true
 
+[node name="TutorialPanel3" type="Panel" parent="."]
+visible = false
+offset_left = 5.0
+offset_top = 118.0
+offset_right = 245.0
+offset_bottom = 255.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_7arjl")
+
+[node name="TutorialLabel3" type="Label" parent="TutorialPanel3"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_right = -3.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 24
+text = "Fill in the correct information and hit the send button or your enter key to send the email."
+autowrap_mode = 2
+
+[node name="Pointer4" type="TextureRect" parent="."]
+visible = false
+offset_left = 17.0
+offset_top = 25.0
+offset_right = 49.0
+offset_bottom = 73.0
+texture = ExtResource("7_qr53j")
+
+[node name="TutorialPanel4" type="Panel" parent="."]
+visible = false
+offset_left = 61.0
+offset_top = 51.0
+offset_right = 301.0
+offset_bottom = 188.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_7arjl")
+
+[node name="TutorialLabel4" type="Label" parent="TutorialPanel4"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_right = -3.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 24
+text = "Lastly, this is your remaining time for the day. You can add time by changing the difficulty in the main menu."
+autowrap_mode = 2
+
 [node name="PhonePanel" type="Panel" parent="."]
 visible = false
 offset_left = 1.0
@@ -780,6 +831,7 @@ text = "Day 1"
 [connection signal="player_speech_finished" from="." to="." method="_on_player_speech_finished"]
 [connection signal="desktop_clicked" from="Desktop" to="." method="_on_desktop_clicked"]
 [connection signal="phone_clicked" from="Phone" to="." method="_on_phone_clicked"]
+[connection signal="text_changed" from="Screen/EmailTo" to="." method="_on_email_to_text_changed"]
 [connection signal="text_changed" from="Screen/EmailInput" to="." method="_on_email_input_text_changed"]
 [connection signal="text_changed" from="Screen/CalendarPanel/ContactSearch" to="." method="_on_contact_search_text_changed"]
 [connection signal="item_activated" from="Screen/CalendarPanel/ContactList" to="." method="_on_contact_list_item_activated"]
