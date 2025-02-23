@@ -256,7 +256,7 @@ var event_tracker := [
 	['So how was your first day?', 1],
 	['Great, although I\'ve gotta say these emails are still pretty mean spirited.', 0],
 	['Ah, I\'m sure it\'s fine. Now listen.', 1],
-	['Unfortunately we had to let go of our other receptionist today so you\'ll be picking up her duties starting tomorrow.', 1],
+	['Unfortunately we had to let go of our other assistant today so you\'ll be picking up her duties starting tomorrow.', 1],
 	['Oh no, that\'s terrible. What was she fired for?', 0],
 	['We just felt that our goals weren\'t aligning for optimal officeplace workflow.', 1],
 	['Don\'t worry though, your job is completely safe... as long as you continue the good work that is.', 1],
@@ -267,10 +267,45 @@ var event_tracker := [
 	['Well great! I\'ll be in extra early tomorrow to learn about my new tasks.', 0],
 	['That\'s the spirit kid!', 1],
 	'next day',
-	['test', 1],
-	['test', 0],
+	['Oh hey boss. Not gonna lie, I didn\'t get much sleep last night. There was this cat outside my window and...', 0],
+	['Yeah that\'s great bud, now listen. I\'m jetting off to Bermuda at the end of the day so I need to make sure',1],
+	['we get today\'s work done quickly, capisce?', 1],
+	['Yes sir, understood.', 0],
+	['Good, now get on the phone and start setting up some meetings. And make sure you don\'t keep anyone on the line for too long.', 1],
+	['Too long on the phone means angry clients and angry clients means less shareholder value.', 1],
+	['We wouldn\'t want that now, would we?', 1],
+	['... Um, no I guess?', 0],
+	['Answer more quickly next time, I don\'t pay you to sit around thinking about obvious answers all day.', 1],
+	['You got it boss.', 0],
 	'phone',
-	#'test'
+	['How\'s my favorite assistant doing?', 1],
+	['Good boss, got all your meetings scheduled just like you asked.', 0],
+	['Although you guys sure do meet at odd times, I think that first meeting was at 4AM on Christmas.', 0],
+	['Look kid, there\'s never a bad time to be making money. Remember that and you\'ll go far in this business.', 1],
+	['You got it boss. So about that promotion we were talking about yesterday...', 0],
+	['No time to chat kid, I\'ve gotta be wheels up in 30.', 1],
+	['Sure thing boss. I\'ll get back to you about it tomorrow.', 0],
+	'next day',
+	#['Hey kid, ready for another great day?', 1],
+	['Oh, hey boss. To be honest, I think I might be coming down with something.', 0],
+	['Ah, bad case of the Mondays huh?', 1],
+	['Well no, and also it\'s Wednesday...', 0],
+	['Look kid, I don\'t pay you to tell me what day it is, I pay you to make phone calls and send emails.', 1],
+	['And by the way, you\'re gonna have to do both today, we fired another assistant.', 1],
+	['Oh gosh, OK, I guess I can handle that. While I have you though can we just talk real quick about some kind of raise?', 0],
+	['Get your work done today and I promise we\'ll have a talk at the end of the day. Now get to it, time is money kid!', 1],
+	'day 3',
+	['Hey there, you done with all your work for the day?', 1],
+	['Oh, yes sir just finished up.', 0],
+	['Excellent, great job. You\'ve done some really swell work around here.', 1],
+	['Unfortunately we are going to have to let you go.', 1],
+	['... Are you kidding me?', 0],
+	['I\'m afraid not. Although we made record profits this year, there\'s just no room in the budget for a personal assistant.', 1],
+	['Gotta keep those shareholders happy.', 1],
+	['Anyways, keep your head up. I\'m sure you\'ll land on your feet.', 1],
+	['Please just don\'t list me as a reference though.', 1],
+	['I\'m going to be on my private island for the rest of the year and I don\'t want to be bothered.', 1],
+	'end'
 ]
 @onready var event_index := 0
 @onready var speakers = [player_speech_label, boss_speech_label]
@@ -279,6 +314,10 @@ var event_tracker := [
 @onready var day_changing := false
 @onready var skip_tutorial := false
 @onready var anger_speed := 0.0
+@onready var first := true
+@onready var second := true
+@onready var third := true
+@onready var fourth := true
 #@onready var tutorial := false
 
 #Other tasks: order lunch, hand out lunch
@@ -367,7 +406,31 @@ func _input(event: InputEvent) -> void:
 			elif day_changing:
 				pass
 			elif event_tracker[event_index] == 'phone':
+				if second:
+					day_changing = true
+					var tween1 = get_tree().create_tween()
+					tween1.tween_property(blocker, "modulate:a", 1, 1)
+					await get_tree().create_timer(1).timeout
+					second = false
 				phone_tutorial()
+			elif event_tracker[event_index] == 'day 3' and third:
+				day_changing = true
+				var tween1 = get_tree().create_tween()
+				tween1.tween_property(blocker, "modulate:a", 1, 1)
+				await get_tree().create_timer(1).timeout
+				for i in 3:
+					_on_new_email_pressed()
+					add_meeting()
+				door_shutting.play()
+				open_close([boss, boss_speech, boss_speech_tick, player_speech, player_speech_tick], false)
+				open_close([boss_2], true)
+				await get_tree().create_timer(1).timeout
+				var tween2 = get_tree().create_tween()
+				tween2.tween_property(blocker, "modulate:a", 0, 1)
+				await get_tree().create_timer(1).timeout
+				open_close([$StartTimer], true)
+				third = false
+				day_changing = false
 			elif skip_tutorial:
 				if !email_queue.size():
 					for i in 1:
@@ -375,7 +438,24 @@ func _input(event: InputEvent) -> void:
 					open_close([boss_2, taskbar_panel, $TaskbarPanel/MeetingTask, $TaskbarPanel/MeetingCountLabel, $StartTimer, $TimerPanel], true)
 					open_close([boss, boss_speech, boss_speech_tick, player_speech, player_speech_tick], false)
 			elif event_tracker[event_index] == 'email':
+				if first:
+					day_changing = true
+					var tween1 = get_tree().create_tween()
+					tween1.tween_property(blocker, "modulate:a", 1, 1)
+					await get_tree().create_timer(1).timeout
+					first = false
 				email_tutorial()
+			elif event_tracker[event_index] == 'end':
+				$StartTimer.visible = false
+				$Thanks.visible = true
+				$PlayAgain.visible = true
+				var tween1 = get_tree().create_tween()
+				tween1.tween_property(blocker, "modulate:a", 1, 4)
+				var tween2 = get_tree().create_tween()
+				tween2.tween_property($Thanks, "modulate:a", 1, 4)
+				var tween3 = get_tree().create_tween()
+				tween3.tween_property($PlayAgain, "modulate:a", 1, 4)
+				await get_tree().create_timer(4).timeout
 			else:
 				boss_2.visible = true
 				open_close([blocker, boss, boss_speech, boss_speech_tick, player_speech, player_speech_tick], false)
@@ -387,10 +467,17 @@ func next_day():
 	tween1.tween_property(blocker, "modulate:a", 1, 2)
 	await get_tree().create_timer(timer_length).timeout
 	boom.play()
-	day_label.text = 'Day 2'
+	day_label.text = 'Day ' + str(day)
 	day_label.visible = true
 	day_label.modulate = Color(1, 1, 1, 1)
 	boss_speech.visible = false
+	player_speech.visible = false
+	if day == 2:
+		john_office.visible = false
+		$JohnOffice2.visible = true
+	elif day == 3:
+		$JohnOffice2.visible = false
+		$JohnOffice3.visible = true
 	#open_close([boss, boss_speech], false)
 	#boss_2.visible = true
 	await get_tree().create_timer(timer_length).timeout
@@ -409,11 +496,16 @@ func next_day():
 
 func email_tutorial():
 	if tutorial_index == 0:
+		for i in 1:
+			_on_new_email_pressed()
 		open_close([boss, boss_speech, boss_speech_tick, player_speech, player_speech_tick], false)
 		door_shutting.play()
 		open_close([pointer_1, boss_2, taskbar_panel, tutorial_panel_1], true)
-		for i in 3:
-			_on_new_email_pressed()
+		await get_tree().create_timer(1).timeout
+		var tween1 = get_tree().create_tween()
+		tween1.tween_property(blocker, "modulate:a", 0, 1)
+		await get_tree().create_timer(1).timeout
+		day_changing = false
 		tutorial_index += 1
 	elif tutorial_index == 1:
 		open_close([pointer_1, tutorial_panel_1], false)
@@ -450,12 +542,16 @@ func email_tutorial():
 func phone_tutorial():
 	if tutorial_index == 0:
 		open_close([boss, boss_speech, boss_speech_tick, player_speech, player_speech_tick], false)
-		open_close([boss_2, $TaskbarPanel/MeetingTask, $TaskbarPanel/MeetingCountLabel, $TutorialPanel6, $Pointer6], true)
-		boss_2.visible = true
 		door_shutting.play()
-		for i in 3:
-			_on_new_email_pressed()
+		open_close([boss_2, $TaskbarPanel/MeetingTask, $TaskbarPanel/MeetingCountLabel, $TutorialPanel6, $Pointer6], true)
+		for i in 1:
+			#_on_new_email_pressed()
 			add_meeting()
+		await get_tree().create_timer(1).timeout
+		var tween1 = get_tree().create_tween()
+		tween1.tween_property(blocker, "modulate:a", 0, 1)
+		await get_tree().create_timer(1).timeout
+		day_changing = false
 		tutorial_index += 1
 	elif tutorial_index == 1:
 		open_close([$TutorialPanel6, $Pointer6], false)
@@ -463,23 +559,24 @@ func phone_tutorial():
 		tutorial_index += 1
 	elif tutorial_index == 2:
 		open_close([$TutorialPanel7, $Pointer7], false)
+		open_close([$PhonePanel2, $AngerMeter, $AngryFace, $TutorialPanel9], true)
+		tutorial_index += 1
+	elif tutorial_index == 3:
+		open_close([$PhonePanel2, $AngerMeter, $AngryFace, $TutorialPanel9], false)
 		_on_desktop_clicked()
 		open_close([$Pointer8], true)
 		tutorial_index += 1
-	elif tutorial_index == 3:
+	elif tutorial_index == 4:
 		open_close([$Pointer8], false)
 		_on_calendar_icon_clicked()
 		$TutorialPanel8.visible = true
 		tutorial_index += 1
-	elif tutorial_index == 4:
+	elif tutorial_index == 5:
 		$TutorialPanel8.visible = false
 		_on_close_calendar_pressed()
 		_on_close_screen_pressed()
 		$StartTimer.visible = true
 		tutorial_index += 1
-	elif tutorial_index == 5:
-		pass
-		#open_close([$AngerMeter, $AngryFace], true)
 
 func open_close(nodes: Array, open: bool):
 	for i in nodes:
@@ -545,7 +642,7 @@ func send_email():
 
 func choose_email() -> Array:
 	#return [email_responses[randi_range(1, 60)], all_names[randi_range(0, 149)]]
-	return ['test', 'test']
+	return ['a', 'a']
 
 func _on_email_input_text_changed() -> void:
 	var new_email_text: String = email_input.text
@@ -585,7 +682,7 @@ func _on_desktop_clicked() -> void:
 func _on_phone_clicked() -> void:
 	if meeting_queue.size():
 		open_close([$AngerMeter, $AngryFace], true)
-		anger_speed = 0.01
+		anger_speed = 0.05
 		skip_typewriter = false
 		if phone_opened and typing:
 			typewriter_timer.set_paused(true)
@@ -670,6 +767,7 @@ func _on_timer_timeout() -> void:
 	game_over()
 
 func _on_restart_pressed() -> void:
+	blocker.visible = true
 	game_over_panel.visible = false
 	email_to.text = ''
 	email_input.text = ''
@@ -680,11 +778,16 @@ func _on_restart_pressed() -> void:
 	_on_hang_up_pressed()
 	email_queue = []
 	meeting_queue = []
-	for i in 3:
-		_on_new_email_pressed()
-	if day == 2:
-		for i in 3:
+	if day == 1:
+		for i in 1:
+			_on_new_email_pressed()
+	elif day == 2:
+		for i in 1:
 			add_meeting()
+	elif day == 3:
+		for i in 1:
+			add_meeting()
+			_on_new_email_pressed()
 	#blocker.visible = true
 	$StartTimer.visible = true
 
@@ -736,7 +839,7 @@ func _on_calendar_icon_clicked() -> void:
 	if !icon_opened:
 		open_calendar()
 	else:
-		open_close([email_input, example_email, close_email, send], false)
+		open_close([email_input, example_email, close_email, send, $Screen/EmailTo, $Screen/EmailRecipientPanel], false)
 		open_calendar()
 
 func open_calendar():
@@ -939,3 +1042,6 @@ func day_finished():
 		tween2.tween_property(blocker, "modulate:a", 0, 2)
 		await get_tree().create_timer(2).timeout
 		next_dialogue(event_index)
+
+func _on_play_again_pressed() -> void:
+	get_tree().change_scene_to_file("res://Scenes/title.tscn")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3 uid="uid://578yfpfkbim6"]
+[gd_scene load_steps=37 format=3 uid="uid://578yfpfkbim6"]
 
 [ext_resource type="Script" path="res://Scenes/main.gd" id="1_7vj2b"]
 [ext_resource type="PackedScene" uid="uid://dlcv1qrrvtfet" path="res://Scenes/desktop.tscn" id="1_dntc4"]
@@ -9,8 +9,10 @@
 [ext_resource type="PackedScene" uid="uid://bx4jtaudukp2x" path="res://Scenes/email_task.tscn" id="4_g8ask"]
 [ext_resource type="Texture2D" uid="uid://ba0b4gp4n0wn8" path="res://Assets/Sprites/Marian/boss3.png" id="4_gnrcg"]
 [ext_resource type="PackedScene" uid="uid://c5713bjf7ax0x" path="res://Scenes/phone.tscn" id="5_skwty"]
+[ext_resource type="Texture2D" uid="uid://ce8ismv4ovbme" path="res://Assets/Sprites/Marian/employee2.png" id="6_8o45p"]
 [ext_resource type="Texture2D" uid="uid://b4k0ur7eqpfrc" path="res://Assets/Sprites/Marian/top_of_desk.png" id="6_i5xd8"]
 [ext_resource type="Texture2D" uid="uid://d282oa1h7sct8" path="res://Assets/Sprites/cursor_finger.png" id="7_5cp4l"]
+[ext_resource type="Texture2D" uid="uid://bnemxgksx4iok" path="res://Assets/Sprites/Marian/employee3.png" id="7_54oee"]
 [ext_resource type="Texture2D" uid="uid://dr7ihbh7uiu1g" path="res://Assets/Sprites/calendar_task_icon.png" id="7_frmic"]
 [ext_resource type="Texture2D" uid="uid://bqym6wnd8u8og" path="res://Assets/Sprites/cursor_finger_no_click.png" id="7_qr53j"]
 [ext_resource type="Texture2D" uid="uid://dge34nelojwkh" path="res://Assets/Sprites/screen.png" id="8_3seal"]
@@ -86,6 +88,24 @@ offset_top = 150.0
 offset_right = 208.0
 offset_bottom = 278.0
 texture = ExtResource("4_7jg1b")
+flip_h = true
+
+[node name="JohnOffice2" type="TextureRect" parent="."]
+visible = false
+offset_left = 133.0
+offset_top = 150.0
+offset_right = 208.0
+offset_bottom = 278.0
+texture = ExtResource("6_8o45p")
+flip_h = true
+
+[node name="JohnOffice3" type="TextureRect" parent="."]
+visible = false
+offset_left = 133.0
+offset_top = 150.0
+offset_right = 208.0
+offset_bottom = 278.0
+texture = ExtResource("7_54oee")
 flip_h = true
 
 [node name="TopOfDesk" type="TextureRect" parent="."]
@@ -777,6 +797,113 @@ offset_bottom = 269.0
 theme_override_font_sizes/font_size = 24
 text = "Hang Up"
 
+[node name="PhonePanel2" type="Panel" parent="."]
+visible = false
+offset_left = 1.0
+offset_top = 77.0
+offset_right = 139.0
+offset_bottom = 350.0
+
+[node name="PhoneVbox" type="VBoxContainer" parent="PhonePanel2"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PhoneCallerLabel" type="Label" parent="PhonePanel2/PhoneVbox"]
+custom_minimum_size = Vector2(16, 24)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+autowrap_mode = 2
+
+[node name="PhoneCompanyLabel" type="Label" parent="PhonePanel2/PhoneVbox"]
+custom_minimum_size = Vector2(16, 24)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+autowrap_mode = 2
+
+[node name="PhoneReasonLabel" type="Label" parent="PhonePanel2/PhoneVbox"]
+custom_minimum_size = Vector2(16, 24)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+autowrap_mode = 2
+
+[node name="MeetingVbox" type="VBoxContainer" parent="PhonePanel2"]
+layout_mode = 2
+offset_right = 138.0
+offset_bottom = 40.0
+
+[node name="MeetingAttendees" type="Label" parent="PhonePanel2/MeetingVbox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Attendees:
+Alice Carter
+Michael Bennett
+Sophia Ramirez"
+
+[node name="MeetingDate" type="Label" parent="PhonePanel2/MeetingVbox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Date:
+Dec 25"
+
+[node name="MeetingTime" type="Label" parent="PhonePanel2/MeetingVbox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Time:
+4:00"
+
+[node name="ContinueCall" type="Button" parent="PhonePanel2"]
+visible = false
+layout_mode = 0
+offset_top = 237.0
+offset_right = 138.0
+offset_bottom = 269.0
+theme_override_font_sizes/font_size = 24
+text = "Continue"
+
+[node name="HoldPhone" type="Button" parent="PhonePanel2"]
+layout_mode = 0
+offset_top = 205.0
+offset_right = 138.0
+offset_bottom = 237.0
+theme_override_font_sizes/font_size = 24
+text = "Hold"
+
+[node name="HangUp" type="Button" parent="PhonePanel2"]
+visible = false
+layout_mode = 0
+offset_top = 237.0
+offset_right = 138.0
+offset_bottom = 269.0
+theme_override_font_sizes/font_size = 24
+text = "Hang Up"
+
+[node name="TutorialPanel9" type="Panel" parent="."]
+visible = false
+offset_left = 144.0
+offset_top = 85.0
+offset_right = 410.0
+offset_bottom = 250.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_7arjl")
+
+[node name="TutorialLabel9" type="Label" parent="TutorialPanel9"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 24
+text = "You can keep the client on the line while you set the meeting on the computer. Just be sure to watch the anger meter or Mr. Hawthorne will be on you."
+autowrap_mode = 2
+
 [node name="NewEmail" type="Button" parent="."]
 visible = false
 offset_left = 544.0
@@ -816,6 +943,7 @@ text = "When you're ready, click here to start your day."
 autowrap_mode = 2
 
 [node name="TimerPanel" type="Panel" parent="."]
+visible = false
 offset_right = 66.0
 offset_bottom = 30.0
 
@@ -913,40 +1041,6 @@ autowrap_mode = 2
 [node name="DoorShutting" type="AudioStreamPlayer" parent="BossSpeech"]
 stream = ExtResource("24_1nfit")
 
-[node name="Blocker" type="ColorRect" parent="."]
-visible = false
-offset_right = 640.0
-offset_bottom = 360.0
-color = Color(0, 0, 0, 1)
-
-[node name="DayLabel" type="Label" parent="."]
-visible = false
-offset_left = 258.0
-offset_top = 142.0
-offset_right = 298.0
-offset_bottom = 158.0
-theme_override_font_sizes/font_size = 64
-text = "Day 1"
-
-[node name="StartTimer" type="Button" parent="."]
-visible = false
-offset_left = 527.0
-offset_right = 640.0
-offset_bottom = 32.0
-theme_override_font_sizes/font_size = 24
-theme_override_styles/focus = ExtResource("21_bpba8")
-theme_override_styles/disabled_mirrored = ExtResource("21_bpba8")
-theme_override_styles/disabled = ExtResource("21_bpba8")
-theme_override_styles/hover_pressed_mirrored = ExtResource("21_bpba8")
-theme_override_styles/hover_pressed = ExtResource("21_bpba8")
-theme_override_styles/hover_mirrored = ExtResource("21_bpba8")
-theme_override_styles/hover = ExtResource("21_bpba8")
-theme_override_styles/pressed_mirrored = ExtResource("21_bpba8")
-theme_override_styles/pressed = ExtResource("21_bpba8")
-theme_override_styles/normal_mirrored = ExtResource("21_bpba8")
-theme_override_styles/normal = ExtResource("21_bpba8")
-text = "Start Day"
-
 [node name="Boom" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("27_aist2")
 
@@ -967,6 +1061,40 @@ offset_top = 42.0
 offset_right = 44.0
 offset_bottom = 74.0
 texture = ExtResource("28_op1tu")
+
+[node name="Blocker" type="ColorRect" parent="."]
+visible = false
+offset_right = 640.0
+offset_bottom = 360.0
+color = Color(0, 0, 0, 1)
+
+[node name="StartTimer" type="Button" parent="."]
+visible = false
+offset_left = 527.0
+offset_right = 640.0
+offset_bottom = 32.0
+theme_override_font_sizes/font_size = 24
+theme_override_styles/focus = ExtResource("21_bpba8")
+theme_override_styles/disabled_mirrored = ExtResource("21_bpba8")
+theme_override_styles/disabled = ExtResource("21_bpba8")
+theme_override_styles/hover_pressed_mirrored = ExtResource("21_bpba8")
+theme_override_styles/hover_pressed = ExtResource("21_bpba8")
+theme_override_styles/hover_mirrored = ExtResource("21_bpba8")
+theme_override_styles/hover = ExtResource("21_bpba8")
+theme_override_styles/pressed_mirrored = ExtResource("21_bpba8")
+theme_override_styles/pressed = ExtResource("21_bpba8")
+theme_override_styles/normal_mirrored = ExtResource("21_bpba8")
+theme_override_styles/normal = ExtResource("21_bpba8")
+text = "Start Day"
+
+[node name="DayLabel" type="Label" parent="."]
+visible = false
+offset_left = 258.0
+offset_top = 142.0
+offset_right = 386.0
+offset_bottom = 206.0
+theme_override_font_sizes/font_size = 64
+text = "Day 1"
 
 [node name="GameOverPanel" type="Panel" parent="."]
 visible = false
@@ -990,6 +1118,29 @@ offset_top = 209.0
 offset_right = 355.0
 offset_bottom = 240.0
 text = "Try Again?"
+
+[node name="Thanks" type="Label" parent="."]
+visible = false
+modulate = Color(1, 1, 1, 0)
+offset_left = 179.0
+offset_top = 100.0
+offset_right = 485.0
+offset_bottom = 202.0
+theme_override_font_sizes/font_size = 32
+text = "Thanks for playing!
+Developed by: Alex Keller
+Art by: Marian De La Rosa"
+horizontal_alignment = 1
+
+[node name="PlayAgain" type="Button" parent="."]
+visible = false
+modulate = Color(1, 1, 1, 0)
+offset_left = 280.0
+offset_top = 214.0
+offset_right = 392.0
+offset_bottom = 246.0
+theme_override_font_sizes/font_size = 24
+text = "Play Again?"
 
 [connection signal="boss_speech_finished" from="." to="." method="_on_boss_speech_finished"]
 [connection signal="player_speech_finished" from="." to="." method="_on_player_speech_finished"]
@@ -1018,8 +1169,12 @@ text = "Try Again?"
 [connection signal="pressed" from="PhonePanel/ContinueCall" to="." method="_on_continue_call_pressed"]
 [connection signal="pressed" from="PhonePanel/HoldPhone" to="." method="_on_hold_phone_pressed"]
 [connection signal="pressed" from="PhonePanel/HangUp" to="." method="_on_hang_up_pressed"]
+[connection signal="pressed" from="PhonePanel2/ContinueCall" to="." method="_on_continue_call_pressed"]
+[connection signal="pressed" from="PhonePanel2/HoldPhone" to="." method="_on_hold_phone_pressed"]
+[connection signal="pressed" from="PhonePanel2/HangUp" to="." method="_on_hang_up_pressed"]
 [connection signal="pressed" from="NewEmail" to="." method="_on_new_email_pressed"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="gui_input" from="Blocker" to="." method="_on_blocker_gui_input"]
 [connection signal="pressed" from="StartTimer" to="." method="_on_start_timer_pressed"]
 [connection signal="pressed" from="GameOverPanel/Restart" to="." method="_on_restart_pressed"]
+[connection signal="pressed" from="PlayAgain" to="." method="_on_play_again_pressed"]
