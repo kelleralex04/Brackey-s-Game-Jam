@@ -258,7 +258,7 @@ var event_tracker := [
 	['Ah, I\'m sure it\'s fine. Now listen.', 1],
 	['Unfortunately we had to let go of our other receptionist today so you\'ll be picking up her duties starting tomorrow.', 1],
 	['Oh no, that\'s terrible. What was she fired for?', 0],
-	['We just felt that her our goals weren\'t aligning for optimal officeplace workflow.', 1],
+	['We just felt that our goals weren\'t aligning for optimal officeplace workflow.', 1],
 	['Don\'t worry though, your job is completely safe... as long as you continue the good work that is.', 1],
 	['Well OK, I guess I\'m glad to have the opportunity to pick up some more responsibilies.', 0],
 	['Any chance these extra duties come with a pay raise?', 0],
@@ -544,8 +544,8 @@ func send_email():
 		game_over()
 
 func choose_email() -> Array:
-	return [email_responses[randi_range(1, 60)], all_names[randi_range(0, 149)]]
-	#return ['test', 'test']
+	#return [email_responses[randi_range(1, 60)], all_names[randi_range(0, 149)]]
+	return ['test', 'test']
 
 func _on_email_input_text_changed() -> void:
 	var new_email_text: String = email_input.text
@@ -585,7 +585,7 @@ func _on_desktop_clicked() -> void:
 func _on_phone_clicked() -> void:
 	if meeting_queue.size():
 		open_close([$AngerMeter, $AngryFace], true)
-		anger_speed = 0.05
+		anger_speed = 0.01
 		skip_typewriter = false
 		if phone_opened and typing:
 			typewriter_timer.set_paused(true)
