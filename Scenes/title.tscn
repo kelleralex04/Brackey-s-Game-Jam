@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://bgfw6fxx543jm"]
+[gd_scene load_steps=6 format=3 uid="uid://bgfw6fxx543jm"]
 
 [ext_resource type="Script" path="res://Scenes/title.gd" id="1_mvoer"]
 [ext_resource type="Texture2D" uid="uid://cnjeimdweul2" path="res://Assets/Sprites/Marian/background.png" id="2_1hcmr"]
 [ext_resource type="StyleBox" uid="uid://c2nao3s6kqmyk" path="res://Assets/StyleBoxes/title_buttons.tres" id="2_ky8oh"]
 [ext_resource type="Texture2D" uid="uid://dv48n7y1nie0i" path="res://Assets/Sprites/Marian/computer.png" id="4_05cud"]
+[ext_resource type="StyleBox" uid="uid://d0kup8retrj74" path="res://Assets/StyleBoxes/button_style_box.tres" id="5_p58fq"]
 
 [node name="Title" type="Node2D"]
 script = ExtResource("1_mvoer")
@@ -49,6 +50,31 @@ offset_right = 257.0
 offset_bottom = 304.0
 texture = ExtResource("4_05cud")
 flip_h = true
+
+[node name="Panel" type="Panel" parent="."]
+offset_left = 239.0
+offset_top = 212.0
+offset_right = 387.0
+offset_bottom = 243.0
+theme_override_styles/panel = ExtResource("5_p58fq")
+
+[node name="MenuButton" type="MenuButton" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 24
+text = "Difficulty"
+item_count = 4
+popup/item_0/text = "Easy (8 minutes)"
+popup/item_1/text = "Medium (6 minutes)"
+popup/item_1/id = 1
+popup/item_2/text = "Hard (4 minutes)"
+popup/item_2/id = 2
+popup/item_3/text = "Extreme (2 minutes)"
+popup/item_3/id = 3
 
 [node name="ColorRect" type="ColorRect" parent="."]
 visible = false

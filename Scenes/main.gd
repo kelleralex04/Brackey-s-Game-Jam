@@ -165,7 +165,7 @@ var email_responses: Dictionary = {
 	47: "I assume spellcheck and logic were both on vacation when you wrote this.",
 	48: "You really said all of this with a straight face, huh?",
 	49: "Wow, I didn't realize we were just making up rules as we go.",
-	50: "This is the kind of request that makes me wish I believed in ghosts - so one could do my job for me.",
+	50: "Absolutely, I'll get on that right away... unless my pet rock needs emotional support again.",
 	51: "You had one job, and somehow, I'm now the one doing it.",
 	52: "You've officially unlocked a new level of audacity.",
 	53: "I'd address the flaws in your logic, but I don't think we have that kind of time.",
@@ -323,6 +323,7 @@ var event_tracker := [
 #Other tasks: order lunch, hand out lunch
 
 func _ready() -> void:
+	timer.wait_time = int(Global.selected[0]) * 60
 	#blocker.visible = true
 	#blocker.color = Color(0, 0, 0, 0)
 	#typewriter_finished = true
@@ -496,7 +497,7 @@ func next_day():
 
 func email_tutorial():
 	if tutorial_index == 0:
-		for i in 1:
+		for i in 3:
 			_on_new_email_pressed()
 		open_close([boss, boss_speech, boss_speech_tick, player_speech, player_speech_tick], false)
 		door_shutting.play()
@@ -544,7 +545,7 @@ func phone_tutorial():
 		open_close([boss, boss_speech, boss_speech_tick, player_speech, player_speech_tick], false)
 		door_shutting.play()
 		open_close([boss_2, $TaskbarPanel/MeetingTask, $TaskbarPanel/MeetingCountLabel, $TutorialPanel6, $Pointer6], true)
-		for i in 1:
+		for i in 3:
 			#_on_new_email_pressed()
 			add_meeting()
 		await get_tree().create_timer(1).timeout
@@ -618,31 +619,32 @@ func next_dialogue(index: int):
 	event_index += 1
 
 func send_email():
-	if email_input.text == example_email_label.text and email_to.text == email_recipient_label.text:
-		#_on_desktop_clicked()
-		#email_queue[0][0].queue_free()
-		email_queue.pop_front()
-		email_count_label.text = str(email_queue.size())
-		var temp_timer = Timer.new()
-		await get_tree().create_timer(0.01).timeout
-		email_input.text = ''
-		email_to.text = ''
-		if email_queue.size():
-			example_email_label.text = email_queue[0][1][0]
-			email_recipient_label.text = email_queue[0][1][1]
-			email_to.max_length = email_recipient_label.text.length()
-			email_to.grab_focus()
+	if !blocker.visible:
+		if email_input.text == example_email_label.text and email_to.text == email_recipient_label.text:
+			#_on_desktop_clicked()
+			#email_queue[0][0].queue_free()
+			email_queue.pop_front()
+			email_count_label.text = str(email_queue.size())
+			var temp_timer = Timer.new()
+			await get_tree().create_timer(0.01).timeout
+			email_input.text = ''
+			email_to.text = ''
+			if email_queue.size():
+				example_email_label.text = email_queue[0][1][0]
+				email_recipient_label.text = email_queue[0][1][1]
+				email_to.max_length = email_recipient_label.text.length()
+				email_to.grab_focus()
+			else:
+				icon_opened = false
+				open_close([email_input, example_email, close_email, send, email_to, email_recipient_panel], false)
+				day_finished()
 		else:
-			icon_opened = false
-			open_close([email_input, example_email, close_email, send, email_to, email_recipient_panel], false)
-			day_finished()
-	else:
-		_on_desktop_clicked()
-		game_over()
+			_on_desktop_clicked()
+			game_over()
 
 func choose_email() -> Array:
-	#return [email_responses[randi_range(1, 60)], all_names[randi_range(0, 149)]]
-	return ['a', 'a']
+	return [email_responses[randi_range(1, 60)], all_names[randi_range(0, 149)]]
+	#return ['a', 'a']
 
 func _on_email_input_text_changed() -> void:
 	var new_email_text: String = email_input.text
@@ -779,19 +781,21 @@ func _on_restart_pressed() -> void:
 	email_queue = []
 	meeting_queue = []
 	if day == 1:
-		for i in 1:
+		for i in 3:
 			_on_new_email_pressed()
 	elif day == 2:
-		for i in 1:
+		for i in 3:
 			add_meeting()
 	elif day == 3:
-		for i in 1:
+		for i in 3:
 			add_meeting()
 			_on_new_email_pressed()
-	#blocker.visible = true
+	blocker.visible = true
 	$StartTimer.visible = true
 
 func game_over():
+	send.release_focus()
+	$Screen/CalendarPanel/AddToCalendar.release_focus()
 	timer.set_paused(true)
 	game_over_panel.visible = true
 
@@ -812,9 +816,9 @@ func _on_email_icon_clicked() -> void:
 
 func open_email():
 	if email_queue.size():
-		email_to.max_length = email_recipient_label.text.length()
 		example_email_label.text = email_queue[0][1][0]
 		email_recipient_label.text = email_queue[0][1][1]
+		email_to.max_length = email_recipient_label.text.length()
 		email_to.grab_focus()
 		email_opened = true
 		icon_opened = true
@@ -904,28 +908,29 @@ func _on_contact_list_item_activated(index: int) -> void:
 	#open_close([contact_list, contact_search, search_label], false)
 
 func _on_add_to_calendar_pressed() -> void:
-	var minute = minute_picker.value
-	var cur_attendees := []
-	var opt_zero: String = '0' if minute < 10 else ''
-	minute = opt_zero + str(minute)
-	for i in attendee_buttons:
-		if i.text != 'Add':
-			cur_attendees.append(i.text)
-	
-	var cur_meeting = [cur_attendees, month_picker.text, str(day_picker.value), str(hour_picker.value), str(minute)]
-	var normalized_meeting_queue = meeting_queue.map(func(item): return item.map(func(sub): return str(sub)))
-	var normalized_cur_meeting = cur_meeting.map(func(sub): return str(sub))
-	
-	if normalized_cur_meeting in normalized_meeting_queue:
-		meeting_queue.remove_at(normalized_meeting_queue.find(normalized_cur_meeting))
-		meeting_count_label.text = str(meeting_queue.size())
-		reset_calendar()
-		if !meeting_queue.size():
-			day_finished()
-			calendar_panel.visible = false
-			icon_opened = false
-	else:
-		game_over()
+	if !blocker.visible:
+		var minute = minute_picker.value
+		var cur_attendees := []
+		var opt_zero: String = '0' if minute < 10 else ''
+		minute = opt_zero + str(minute)
+		for i in attendee_buttons:
+			if i.text != 'Add':
+				cur_attendees.append(i.text)
+		
+		var cur_meeting = [cur_attendees, month_picker.text, str(day_picker.value), str(hour_picker.value), str(minute)]
+		var normalized_meeting_queue = meeting_queue.map(func(item): return item.map(func(sub): return str(sub)))
+		var normalized_cur_meeting = cur_meeting.map(func(sub): return str(sub))
+		
+		if normalized_cur_meeting in normalized_meeting_queue:
+			meeting_queue.remove_at(normalized_meeting_queue.find(normalized_cur_meeting))
+			meeting_count_label.text = str(meeting_queue.size())
+			reset_calendar()
+			if !meeting_queue.size():
+				day_finished()
+				calendar_panel.visible = false
+				icon_opened = false
+		else:
+			game_over()
 
 func reset_calendar():
 	for i in attendee_buttons:
@@ -1027,6 +1032,8 @@ func _on_hang_up_pressed() -> void:
 
 func day_finished():
 	if !email_queue.size() and !meeting_queue.size():
+		send.release_focus()
+		$Screen/CalendarPanel/AddToCalendar.release_focus()
 		_on_hang_up_pressed()
 		skip_typewriter = false
 		timer.set_paused(true)
