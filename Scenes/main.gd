@@ -272,17 +272,22 @@ var event_tracker := [
 	'phone',
 	#'test'
 ]
-@onready var event_index := 15
+@onready var event_index := 0
 @onready var speakers = [player_speech_label, boss_speech_label]
 @onready var tutorial_index := 0
 @onready var day = 1
 @onready var day_changing := false
-@onready var skip_tutorial := true
+@onready var skip_tutorial := false
+@onready var anger_speed := 0.0
 #@onready var tutorial := false
 
 #Other tasks: order lunch, hand out lunch
 
 func _ready() -> void:
+	#blocker.visible = true
+	#blocker.color = Color(0, 0, 0, 0)
+	#typewriter_finished = true
+	#phone_tutorial()
 	boom.play()
 	timer_length = 0.1
 	open_close([blocker, day_label], true)
@@ -328,6 +333,14 @@ func _process(delta: float) -> void:
 	seconds = int(remaining_time) % 60
 	milliseconds = int((remaining_time - int(remaining_time)) * 100)
 	time_left.text = str(minutes) + ":" + str(seconds).pad_zeros(2) + ":" + str(milliseconds).pad_zeros(2)
+	
+	$AngerMeter.value += anger_speed
+	
+	if $AngerMeter.value >= 100:
+		$AngerMeter.visible = false
+		anger_speed = 0
+		$AngerMeter.value = 0
+		game_over()
 
 func _input(event: InputEvent) -> void:
 	if Input.is_action_just_pressed("ui_cancel"):
@@ -337,7 +350,8 @@ func _input(event: InputEvent) -> void:
 		send_email()
 	
 	if Input.is_action_just_pressed('ui_select') and blocker.visible:
-		if typewriter_finished == false and blocker.visible:
+		#phone_tutorial()
+		if typewriter_finished == false:
 			skip_typewriter = true
 		else:
 			if typeof(event_tracker[event_index]) == 28:
@@ -358,7 +372,6 @@ func _input(event: InputEvent) -> void:
 				if !email_queue.size():
 					for i in 1:
 						_on_new_email_pressed()
-					print('test')
 					open_close([boss_2, taskbar_panel, $TaskbarPanel/MeetingTask, $TaskbarPanel/MeetingCountLabel, $StartTimer, $TimerPanel], true)
 					open_close([boss, boss_speech, boss_speech_tick, player_speech, player_speech_tick], false)
 			elif event_tracker[event_index] == 'email':
@@ -443,14 +456,29 @@ func phone_tutorial():
 		for i in 3:
 			add_meeting()
 		tutorial_index += 1
-	if tutorial_index == 1:
+	elif tutorial_index == 1:
 		open_close([$TutorialPanel6, $Pointer6], false)
-		open_close([$TutorialPanel7, $Pointer7], false)
+		open_close([$TutorialPanel7, $Pointer7], true)
 		tutorial_index += 1
-	if tutorial_index == 2:
+	elif tutorial_index == 2:
 		open_close([$TutorialPanel7, $Pointer7], false)
-		open_close([$TutorialPanel8, $Pointer8], false)
+		_on_desktop_clicked()
+		open_close([$Pointer8], true)
 		tutorial_index += 1
+	elif tutorial_index == 3:
+		open_close([$Pointer8], false)
+		_on_calendar_icon_clicked()
+		$TutorialPanel8.visible = true
+		tutorial_index += 1
+	elif tutorial_index == 4:
+		$TutorialPanel8.visible = false
+		_on_close_calendar_pressed()
+		_on_close_screen_pressed()
+		$StartTimer.visible = true
+		tutorial_index += 1
+	elif tutorial_index == 5:
+		pass
+		#open_close([$AngerMeter, $AngryFace], true)
 
 func open_close(nodes: Array, open: bool):
 	for i in nodes:
@@ -555,6 +583,8 @@ func _on_desktop_clicked() -> void:
 
 func _on_phone_clicked() -> void:
 	if meeting_queue.size():
+		open_close([$AngerMeter, $AngryFace], true)
+		anger_speed = 0.05
 		skip_typewriter = false
 		if phone_opened and typing:
 			typewriter_timer.set_paused(true)
@@ -572,18 +602,19 @@ func _on_phone_clicked() -> void:
 
 func phone_call():
 	typing = true
-	new_call()
-	text_scroll.play()
-	call_typewriter(phone_caller_label, 'Caller:\n' + cur_caller)
-	await typing_finished
-	call_typewriter(phone_company_label, 'Company:\n' + cur_company)
-	await typing_finished
-	call_typewriter(phone_reason_label, 'Reason:\n' + cur_reason)
-	await typing_finished
-	text_scroll.stop()
-	call_finished = true
-	continue_call.visible = true
-	typing = false
+	_on_continue_call_pressed()
+	#new_call()
+	#text_scroll.play()
+	#call_typewriter(phone_caller_label, 'Caller:\n' + cur_caller)
+	#await typing_finished
+	#call_typewriter(phone_company_label, 'Company:\n' + cur_company)
+	#await typing_finished
+	#call_typewriter(phone_reason_label, 'Reason:\n' + cur_reason)
+	#await typing_finished
+	#text_scroll.stop()
+	#call_finished = true
+	#continue_call.visible = true
+	#typing = false
 
 func new_call():
 	rand = randi_range(0, 49)
@@ -630,6 +661,7 @@ func _on_new_email_pressed() -> void:
 
 func _on_start_timer_pressed() -> void:
 	timer.start(timer.wait_time)
+	timer.set_paused(false)
 	blocker.visible = false
 	$StartTimer.visible = false
 
@@ -638,8 +670,25 @@ func _on_timer_timeout() -> void:
 
 func _on_restart_pressed() -> void:
 	game_over_panel.visible = false
+	email_to.text = ''
+	email_input.text = ''
+	reset_calendar()
+	icon_opened = false
+	open_close([email_input, example_email, close_email, send, email_to, email_recipient_panel, calendar_panel], false)
+	_on_close_screen_pressed()
+	_on_hang_up_pressed()
+	email_queue = []
+	meeting_queue = []
+	for i in 3:
+		_on_new_email_pressed()
+	if day == 2:
+		for i in 3:
+			add_meeting()
+	#blocker.visible = true
+	$StartTimer.visible = true
 
 func game_over():
+	timer.set_paused(true)
 	game_over_panel.visible = true
 
 func _on_close_screen_pressed() -> void:
@@ -648,6 +697,7 @@ func _on_close_screen_pressed() -> void:
 
 func _on_hold_phone_pressed() -> void:
 	_on_phone_clicked()
+	anger_speed = 0.1
 
 func _on_email_icon_clicked() -> void:
 	if !icon_opened:
@@ -765,7 +815,9 @@ func _on_add_to_calendar_pressed() -> void:
 	if normalized_cur_meeting in normalized_meeting_queue:
 		meeting_queue.remove_at(normalized_meeting_queue.find(normalized_cur_meeting))
 		meeting_count_label.text = str(meeting_queue.size())
+		reset_calendar()
 		if !meeting_queue.size():
+			day_finished()
 			calendar_panel.visible = false
 			icon_opened = false
 	else:
@@ -779,12 +831,16 @@ func reset_calendar():
 	cur_attendee_button = add_attendee_1
 	add_attendee_1.visible = true
 	open_close([add_attendee_2, add_attendee_3], false)
+	month_picker.selected = -1
+	day_picker.value = 1
+	hour_picker.value = 0
+	minute_picker.value = 0
 
 func _on_continue_call_pressed() -> void:
 	text_scroll.play()
 	call_finished = false
 	continue_call.visible = false
-	if cur_reason == 'Schedule Meeting':
+	#if cur_reason == 'Schedule Meeting':
 		#meeting_attendees = []
 		#for i in randi_range(1, 3):
 			#meeting_attendees.append(company_employee[rand][i + 1])
@@ -794,22 +850,22 @@ func _on_continue_call_pressed() -> void:
 		#minute = opt_zero + str(minute)
 		#meeting_queue.append([meeting_attendees, calendar_list[month][0], randi_range(1, calendar_list[month][1]) , str(randi_range(0, 23)),  minute])
 		#meeting_count_label.text = str(meeting_queue.size())
-		var cur_meeting_attendees = meeting_queue[0][0]
-		var all_attendees = ''
-		for i in cur_meeting_attendees:
-			all_attendees += '\n' + i
-		phone_vbox.visible = false
-		meeting_vbox.visible = true
-		typing = true
-		call_typewriter(meeting_attendees_label, 'Attendees: ' + all_attendees)
-		await typing_finished
-		call_typewriter(meeting_date_label, 'Date:\n' + meeting_queue[0][1] + ' ' + str(meeting_queue[0][2]) + '\n')
-		await typing_finished
-		call_typewriter(meeting_time_label, 'Time:\n' + meeting_queue[0][3] + ':' + meeting_queue[0][4])
-		text_scroll.stop()
-		call_finished = true
-		typing = false
-		hang_up.visible = true
+	var cur_meeting_attendees = meeting_queue[0][0]
+	var all_attendees = ''
+	for i in cur_meeting_attendees:
+		all_attendees += '\n' + i
+	phone_vbox.visible = false
+	meeting_vbox.visible = true
+	typing = true
+	call_typewriter(meeting_attendees_label, 'Attendees: ' + all_attendees)
+	await typing_finished
+	call_typewriter(meeting_date_label, 'Date:\n' + meeting_queue[0][1] + ' ' + str(meeting_queue[0][2]) + '\n')
+	await typing_finished
+	call_typewriter(meeting_time_label, 'Time:\n' + meeting_queue[0][3] + ':' + meeting_queue[0][4])
+	text_scroll.stop()
+	call_finished = true
+	typing = false
+	hang_up.visible = true
 
 func add_meeting():
 		rand = randi_range(0, 49)
@@ -852,18 +908,21 @@ func reset_text(labels: Array[Label]):
 
 func _on_hang_up_pressed() -> void:
 	reset_text([phone_caller_label, phone_company_label, phone_reason_label, meeting_attendees_label, meeting_date_label, meeting_time_label])
+	anger_speed = 0
+	$AngerMeter.value = 0
+	open_close([$AngerMeter, $AngryFace], false)
 	phone_vbox.visible = true
 	meeting_vbox.visible = false
 	call_finished = false
 	hang_up.visible = false
 	#hang_up_status = true
-	phone_opened = !phone_opened
-	phone_panel.visible = !phone_panel.visible
+	phone_opened = false
+	phone_panel.visible = false
 	#hang_up_status = false
 	#_on_phone_clicked()
 
 func day_finished():
-	if !email_queue.size():
+	if !email_queue.size() and !meeting_queue.size():
 		skip_typewriter = false
 		timer.set_paused(true)
 		_on_close_screen_pressed()

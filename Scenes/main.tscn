@@ -161,6 +161,7 @@ position = Vector2(142, 224)
 position = Vector2(97, 261)
 
 [node name="Pointer7" type="TextureRect" parent="."]
+visible = false
 offset_left = 111.0
 offset_top = 251.0
 offset_right = 143.0
@@ -170,10 +171,10 @@ texture = ExtResource("7_5cp4l")
 
 [node name="TutorialPanel7" type="Panel" parent="."]
 visible = false
-offset_left = 100.0
-offset_top = 89.0
-offset_right = 366.0
-offset_bottom = 170.0
+offset_left = 133.0
+offset_top = 191.0
+offset_right = 399.0
+offset_bottom = 272.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_7arjl")
 
 [node name="TutorialLabel7" type="Label" parent="TutorialPanel7"]
@@ -186,7 +187,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 24
-text = "Look here to see how many meetings you have left to schedule for the day"
+text = "Click the phone to start a call and get meeting details"
 autowrap_mode = 2
 
 [node name="TaskbarPanel" type="Panel" parent="."]
@@ -645,6 +646,38 @@ offset_right = 49.0
 offset_bottom = 73.0
 texture = ExtResource("7_qr53j")
 
+[node name="Pointer8" type="TextureRect" parent="."]
+visible = false
+offset_left = 284.0
+offset_top = 150.0
+offset_right = 316.0
+offset_bottom = 198.0
+rotation = 1.5708
+texture = ExtResource("7_5cp4l")
+flip_v = true
+
+[node name="TutorialPanel8" type="Panel" parent="."]
+visible = false
+offset_left = 9.0
+offset_top = 122.0
+offset_right = 249.0
+offset_bottom = 256.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_7arjl")
+
+[node name="TutorialLabel8" type="Label" parent="TutorialPanel8"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_right = -3.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 24
+text = "Add each attendee in order and set the correct date before adding the meeting to your boss's calender."
+autowrap_mode = 2
+
 [node name="TutorialPanel4" type="Panel" parent="."]
 visible = false
 offset_left = 61.0
@@ -670,7 +703,7 @@ autowrap_mode = 2
 [node name="PhonePanel" type="Panel" parent="."]
 visible = false
 offset_left = 1.0
-offset_top = 50.0
+offset_top = 77.0
 offset_right = 139.0
 offset_bottom = 350.0
 
@@ -729,9 +762,9 @@ text = "Continue"
 
 [node name="HoldPhone" type="Button" parent="PhonePanel"]
 layout_mode = 0
-offset_top = 269.0
+offset_top = 205.0
 offset_right = 138.0
-offset_bottom = 301.0
+offset_bottom = 237.0
 theme_override_font_sizes/font_size = 24
 text = "Hold"
 
@@ -783,7 +816,6 @@ text = "When you're ready, click here to start your day."
 autowrap_mode = 2
 
 [node name="TimerPanel" type="Panel" parent="."]
-visible = false
 offset_right = 66.0
 offset_bottom = 30.0
 
@@ -806,29 +838,6 @@ text = "00:00"
 [node name="Timer" type="Timer" parent="."]
 wait_time = 120.0
 one_shot = true
-
-[node name="GameOverPanel" type="Panel" parent="."]
-visible = false
-offset_right = 640.0
-offset_bottom = 360.0
-
-[node name="GameOverLabel" type="Label" parent="GameOverPanel"]
-layout_mode = 0
-offset_left = 109.0
-offset_top = 148.0
-offset_right = 550.0
-offset_bottom = 193.0
-theme_override_colors/font_color = Color(1, 0, 0, 1)
-theme_override_font_sizes/font_size = 32
-text = "NOTHING CAN GO WRONG!!!"
-
-[node name="Restart" type="Button" parent="GameOverPanel"]
-layout_mode = 0
-offset_left = 268.0
-offset_top = 209.0
-offset_right = 364.0
-offset_bottom = 240.0
-text = "Try Again?"
 
 [node name="TextScroll" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("17_i0lf5")
@@ -944,21 +953,43 @@ stream = ExtResource("27_aist2")
 [node name="AngerMeter" type="ProgressBar" parent="."]
 visible = false
 offset_left = 54.0
-offset_top = 32.0
+offset_top = 52.0
 offset_right = 123.0
-offset_bottom = 45.0
+offset_bottom = 65.0
 theme_override_styles/background = SubResource("StyleBoxFlat_2qp3d")
 theme_override_styles/fill = SubResource("StyleBoxFlat_htn1c")
-value = 50.0
 show_percentage = false
 
 [node name="AngryFace" type="TextureRect" parent="."]
 visible = false
 offset_left = 12.0
-offset_top = 14.0
+offset_top = 42.0
 offset_right = 44.0
-offset_bottom = 46.0
+offset_bottom = 74.0
 texture = ExtResource("28_op1tu")
+
+[node name="GameOverPanel" type="Panel" parent="."]
+visible = false
+offset_right = 640.0
+offset_bottom = 360.0
+
+[node name="GameOverLabel" type="Label" parent="GameOverPanel"]
+layout_mode = 0
+offset_left = 41.0
+offset_top = 112.0
+offset_right = 601.0
+offset_bottom = 176.0
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+theme_override_font_sizes/font_size = 64
+text = "NOTHING CAN GO WRONG!!!"
+
+[node name="Restart" type="Button" parent="GameOverPanel"]
+layout_mode = 0
+offset_left = 259.0
+offset_top = 209.0
+offset_right = 355.0
+offset_bottom = 240.0
+text = "Try Again?"
 
 [connection signal="boss_speech_finished" from="." to="." method="_on_boss_speech_finished"]
 [connection signal="player_speech_finished" from="." to="." method="_on_player_speech_finished"]
@@ -989,6 +1020,6 @@ texture = ExtResource("28_op1tu")
 [connection signal="pressed" from="PhonePanel/HangUp" to="." method="_on_hang_up_pressed"]
 [connection signal="pressed" from="NewEmail" to="." method="_on_new_email_pressed"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
-[connection signal="pressed" from="GameOverPanel/Restart" to="." method="_on_restart_pressed"]
 [connection signal="gui_input" from="Blocker" to="." method="_on_blocker_gui_input"]
 [connection signal="pressed" from="StartTimer" to="." method="_on_start_timer_pressed"]
+[connection signal="pressed" from="GameOverPanel/Restart" to="." method="_on_restart_pressed"]
