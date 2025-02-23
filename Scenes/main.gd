@@ -267,8 +267,8 @@ var event_tracker := [
 	['Well great! I\'ll be in extra early tomorrow to learn about my new tasks.', 0],
 	['That\'s the spirit kid!', 1],
 	'next day',
-	['sdflkjasdf', 1],
-	['sdflkjasdf', 0],
+	['test', 1],
+	['test', 0],
 	'phone',
 	#'test'
 ]
@@ -289,7 +289,7 @@ func _ready() -> void:
 	#typewriter_finished = true
 	#phone_tutorial()
 	boom.play()
-	timer_length = 0.1
+	timer_length = 2
 	open_close([blocker, day_label], true)
 	var line_edit = hour_picker.get_line_edit()
 	line_edit.context_menu_enabled = false
@@ -298,7 +298,7 @@ func _ready() -> void:
 	line_edit = day_picker.get_line_edit()
 	line_edit.context_menu_enabled = false
 	
-	typing_speed = 0.025
+	typing_speed = 0.05
 	format_time(minute_picker.value, minute_picker)
 	format_time(hour_picker.value, hour_picker)
 	
@@ -412,7 +412,7 @@ func email_tutorial():
 		open_close([boss, boss_speech, boss_speech_tick, player_speech, player_speech_tick], false)
 		door_shutting.play()
 		open_close([pointer_1, boss_2, taskbar_panel, tutorial_panel_1], true)
-		for i in 1:
+		for i in 3:
 			_on_new_email_pressed()
 		tutorial_index += 1
 	elif tutorial_index == 1:
@@ -454,6 +454,7 @@ func phone_tutorial():
 		boss_2.visible = true
 		door_shutting.play()
 		for i in 3:
+			_on_new_email_pressed()
 			add_meeting()
 		tutorial_index += 1
 	elif tutorial_index == 1:
@@ -543,8 +544,8 @@ func send_email():
 		game_over()
 
 func choose_email() -> Array:
-	#return [email_responses[randi_range(1, 60)], all_names[randi_range(0, 149)]]
-	return ['test', 'test']
+	return [email_responses[randi_range(1, 60)], all_names[randi_range(0, 149)]]
+	#return ['test', 'test']
 
 func _on_email_input_text_changed() -> void:
 	var new_email_text: String = email_input.text
@@ -923,6 +924,7 @@ func _on_hang_up_pressed() -> void:
 
 func day_finished():
 	if !email_queue.size() and !meeting_queue.size():
+		_on_hang_up_pressed()
 		skip_typewriter = false
 		timer.set_paused(true)
 		_on_close_screen_pressed()
